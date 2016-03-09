@@ -1,0 +1,27 @@
+{
+    "name": "html2wp/simple-wp-starter-theme",
+    "description": "The starter theme used as a part of the htmltowordpress.io conversion process.",
+    "type": "wordpress-theme",
+    "license": "GPL-2.0+",
+    "homepage": "http://htmltowordpress.io",
+    "authors": [
+        {
+            "name": "Harri Heljala",
+            "email": "harri@htmltowordpress.io",
+            "homepage": "http://helja.la",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "support@htmltowordpress.io",
+        "source": "https://github.com/html2wp/simple-wp-starter-theme"
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "composer/installers": "~1.0",
+        "tgmpa/tgm-plugin-activation": "*"
+    },
+    "config": {
+        "vendor-dir": "html2wp/vendor"
+    }
+}
