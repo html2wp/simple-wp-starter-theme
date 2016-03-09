@@ -1,5 +1,5 @@
-# htmltowordpress.io Simple WordPress Starter Theme
-All the themes generated with htmltowordpress.io consist of two parts, the original html converted to php format and the Simple WordPress Starter Theme. 
+# [htmltowordpress.io](http://htmltowordpress.io "HTML to WordPress") Simple WordPress Starter Theme
+All the themes generated with [htmltowordpress.io](http://htmltowordpress.io "HTML to WordPress") consist of two parts, the original html converted to php format and the Simple WordPress Starter Theme. 
 
 ## Files
 - __front-page.php__ contains your front-page (index.html) after the conversion
