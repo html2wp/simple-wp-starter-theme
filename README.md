@@ -7,7 +7,6 @@ All the themes generated with [htmltowordpress.io](http://htmltowordpress.io "HT
 - __functions.php__ loads the files located inside the html2wp folder. It is recommended to not add any custom code here if you plan to convert your theme again. Please consider using a child theme instead: http://codex.wordpress.org/Child_Themes
 - __style.css__ provides details about the theme that are used by WordPress
 - __html2wp-folder__ contains the theme functionality logic
-- __composer.json__ & __composer.lock__ are used by the composer package manager for dependency management
 - __Any other files__ are added from the original html website during the conversion to a WordPress theme.
 
 ## Contributing
