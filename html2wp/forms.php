@@ -356,22 +356,6 @@ function detect_plugin_activation(  $plugin, $network_activation ) {
     }
 }
 
-//If gravity form plugin is not present then asks the user to install it
-if( !class_exists('GFForms') ) {
-  add_action( 'admin_notices', 'gravity_forms_notice' );
-}
-
-/**
- * Notice for installing gravity forms
- */
-function gravity_forms_notice() {
-  ?>
-  <div class="error notice">
-      <p><?php _e( 'Please install <a href="http://www.gravityforms.com" target="_blank">Gravity Forms</a> in order to activate the Contact Form feature of this theme!', THEME_DOMAIN ); ?></p>
-  </div>
-  <?php
-}
-
 /**
  * If the gravity forms have not been setup, say due to an
  * inactive Gravity Forms (Plugin installed and activated but
