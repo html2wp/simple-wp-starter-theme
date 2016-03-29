@@ -336,6 +336,12 @@ function detect_plugin_activation(  $plugin, $network_activation ) {
     
     //if it was the Gravity Forms plugin
     if ($gf_plugin_name == $plugin_data['Name']) {
+
+        /**
+         * Disable the gravity forms installation wizard
+         * as it conflicts with auto setupof forms
+         */
+        delete_option("gform_pending_installation");
         
         /**
          * check if a GF contact form has already been created
