@@ -133,6 +133,15 @@ function html2wp_register_required_plugins() {
 			'force_activation' => true,
 		),
 
+		array(
+			'name'             => 'Gravity Forms',
+			'slug'             => 'gravityforms',
+			'source'           => 'https://github.com/wp-premium/gravityforms/archive/master.zip',
+			'required'         => true,
+			'force_activation' => true,
+		),
+
+
 	);
 
 	tgmpa( $plugins );

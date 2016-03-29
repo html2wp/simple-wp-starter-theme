@@ -3,7 +3,7 @@
 
 define( 'THEME_DOMAIN', 'html2wp-theme');
 define( 'THEME_DIR', get_template_directory() );
-define( 'CONTACT_PAGE_GF_FORM_CREATED', '_html2wp_theme_gf_form_id' );
+define( 'HTML2WP_FORM_CREATED', '_html2wp_gf_form' );
 
 /**
  * Creates a gravity for programatically from the form json
@@ -16,11 +16,10 @@ function setup_gravity_contact_form() {
      * in order to create a new GV Form
      */
 
-    $form_data = json_decode(file_get_contents(THEME_DIR . '/form_config.json'), true);
-    $html2wp_settings = json_decode( file_get_contents( get_template_directory() . '/html2wp/json/settings.json' ), true );
+    global $html2wp_settings;
     
     //Iterate through multiple forms
-    foreach ($form_data as $this_form_data) {
+    foreach ($html2wp_settings["forms"] as $this_form_data) {
     
         //get the name of the form
         $gf_form_name = $this_form_data["gfname"];
@@ -144,8 +143,8 @@ function setup_gravity_contact_form() {
              * and we need not run the gravity forms setup
              * methods again with the activated_plugin hook
              */
-            if (get_option(CONTACT_PAGE_GF_FORM_CREATED, -1) != -1) {
-                update_option( CONTACT_PAGE_GF_FORM_CREATED, $formid );
+            if (get_option(HTML2WP_FORM_CREATED, -1) != -1) {
+                update_option( HTML2WP_FORM_CREATED, $formid );
             }
         }
     }
@@ -278,9 +277,6 @@ function form_submit_api_endpoint() {
                         $response = array(1, "Thanks for your submission!");
                     }
                 }
-
-                //send email
-                //TODO: Setup notifications
             } else {
                 $response = array(0, "Error");
             }
@@ -348,9 +344,8 @@ function detect_plugin_activation(  $plugin, $network_activation ) {
          * processed only if a GF contact form was not already
          * created by the theme activation hook.
          */
-        if (get_option(CONTACT_PAGE_GF_FORM_CREATED, -1) == -1) {
+        if (get_option(HTML2WP_FORM_CREATED, -1) == -1) {
             setup_gravity_contact_form();
-            setup_wp_contact_page();
         }
     }
 }
@@ -367,6 +362,25 @@ function gravity_forms_notice() {
   ?>
   <div class="error notice">
       <p><?php _e( 'Please install <a href="http://www.gravityforms.com" target="_blank">Gravity Forms</a> in order to activate the Contact Form feature of this theme!', THEME_DOMAIN ); ?></p>
+  </div>
+  <?php
+}
+
+/**
+ * If the gravity forms have not been setup, say due to an
+ * inactive Gravity Forms (Plugin installed and activated but
+ * the GFForm installation wizard not run yet
+ */
+if( get_option(HTML2WP_FORM_CREATED, -1) == -1 ) {
+  add_action( 'admin_notices', 'gravity_forms_rerun_notice' );
+}
+/**
+ * Notice for installing gravity forms
+ */
+function gravity_forms_rerun_notice() {
+  ?>
+  <div class="error notice">
+      <p><?php _e( 'Please <a href="">Click Here</a> to finish the creation of the forms from your HTML To Wordpress converted theme!', THEME_DOMAIN ); ?></p>
   </div>
   <?php
 }
