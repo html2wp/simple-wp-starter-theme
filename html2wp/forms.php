@@ -355,23 +355,3 @@ function detect_plugin_activation(  $plugin, $network_activation ) {
         }
     }
 }
-
-/**
- * If the gravity forms have not been setup, say due to an
- * inactive Gravity Forms (Plugin installed and activated but
- * the GFForm installation wizard not run yet
- */
-if( get_option(HTML2WP_FORM_CREATED, -1) == -1 ) {
-  add_action( 'admin_notices', 'gravity_forms_rerun_notice' );
-}
-
-/**
- * Notice for installing gravity forms
- */
-function gravity_forms_rerun_notice() {
-  ?>
-  <div class="error notice">
-      <p><?php _e( 'Please <a href="">Click Here</a> to finish the creation of the forms from your HTML To Wordpress converted theme. Do this only after you have installed, activated and run the Gravity Forms instalation wizard.', THEME_DOMAIN ); ?></p>
-  </div>
-  <?php
-}
