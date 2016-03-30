@@ -3,7 +3,8 @@
 
 define( 'THEME_DOMAIN', 'html2wp-theme');
 define( 'THEME_DIR', get_template_directory() );
-define( 'HTML2WP_FORM_CREATED', '_html2wp_gf_form_created_once_55' );
+define( 'HTML2WP_FORM_CREATED', '_html2wp_gf_form_created_once_555' );
+define( 'GRAVITY_VERSION', '1.9.17.5' );
 
 /**
  * Creates a gravity for programatically from the form json
@@ -22,8 +23,8 @@ function setup_gravity_contact_form() {
      * Disable the gravity forms installation wizard
      * as it conflicts with auto setupof forms
      */
-    update_option("gform_pending_installation", -1);   
-    delete_option("gform_pending_installation");       
+    update_option("gform_pending_installation", -1);     
+    update_option("rg_form_version", GRAVITY_VERSION);      
     
     //Iterate through multiple forms
     foreach ($html2wp_settings["forms"] as $this_form_data) {
@@ -316,6 +317,7 @@ function setup_theme_components () {
      * as it conflicts with auto setupof forms
      */
     update_option("gform_pending_installation", -1);     
+    update_option("rg_form_version", GRAVITY_VERSION);
 
     //check if the Gravity forms plugin is active
     if( class_exists('GFForms') ) {
@@ -363,8 +365,8 @@ function detect_plugin_activation(  $plugin, $network_activation ) {
          * Disable the gravity forms installation wizard
          * as it conflicts with auto setupof forms
          */
-        update_option("gform_pending_installation", -1);      
-        delete_option("gform_pending_installation");      
+        update_option("gform_pending_installation", -1);     
+        update_option("rg_form_version", GRAVITY_VERSION);    
         
         /**
          * check if a GF contact form has already been created
@@ -375,6 +377,7 @@ function detect_plugin_activation(  $plugin, $network_activation ) {
          */
         if (get_option(HTML2WP_FORM_CREATED, -1) == -1) {
             setup_gravity_contact_form();
+            delete_option("gform_pending_installation");  
         }
     }
 }
