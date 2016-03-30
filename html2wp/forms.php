@@ -3,7 +3,7 @@
 
 define( 'THEME_DOMAIN', 'html2wp-theme');
 define( 'THEME_DIR', get_template_directory() );
-define( 'HTML2WP_FORM_CREATED', '_html2wp_gf_form' );
+define( 'HTML2WP_FORM_CREATED', '_html2wp_gf_form_created_once_55' );
 
 /**
  * Creates a gravity for programatically from the form json
@@ -17,6 +17,13 @@ function setup_gravity_contact_form() {
      */
 
     global $html2wp_settings;
+
+    /**
+     * Disable the gravity forms installation wizard
+     * as it conflicts with auto setupof forms
+     */
+    update_option("gform_pending_installation", -1);   
+    delete_option("gform_pending_installation");       
     
     //Iterate through multiple forms
     foreach ($html2wp_settings["forms"] as $this_form_data) {
@@ -39,6 +46,7 @@ function setup_gravity_contact_form() {
                 //Form has already been created
                 //may be from a bad previous install?
                 $form_created = 1;
+                break;
             } else {
 
             }
@@ -136,6 +144,7 @@ function setup_gravity_contact_form() {
 
             //create a form
             $formid = GFAPI::add_form( $form );
+            //TODO: check for WP_Error and also possibly implement logging
             
             /**
              * Store the form ID in theme options, so that
@@ -146,6 +155,7 @@ function setup_gravity_contact_form() {
             if (get_option(HTML2WP_FORM_CREATED, -1) == -1) {
                 update_option( HTML2WP_FORM_CREATED, $formid );
             }
+        } else {
         }
     }
 }
@@ -301,10 +311,16 @@ add_action('after_switch_theme', 'setup_theme_components');
  */
 function setup_theme_components () {
 
+    /**
+     * Disable the gravity forms installation wizard
+     * as it conflicts with auto setupof forms
+     */
+    update_option("gform_pending_installation", -1);     
+
     //check if the Gravity forms plugin is active
     if( class_exists('GFForms') ) {
 
-    	/**
+        /**
          * Gravity forms is active
          * Process the setup methods
          * these should occur each time a theme is activated,
@@ -338,10 +354,17 @@ function detect_plugin_activation(  $plugin, $network_activation ) {
     if ($gf_plugin_name == $plugin_data['Name']) {
 
         /**
+         * Since we disable the GFForms wizard, the required
+         * tables are not created.
+         */
+        GFForms::setup_database();
+
+        /**
          * Disable the gravity forms installation wizard
          * as it conflicts with auto setupof forms
          */
-        delete_option("gform_pending_installation");
+        update_option("gform_pending_installation", -1);      
+        delete_option("gform_pending_installation");      
         
         /**
          * check if a GF contact form has already been created
