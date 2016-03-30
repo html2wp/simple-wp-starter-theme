@@ -330,6 +330,7 @@ function setup_theme_components () {
          * TODO: Check if Gravity forms is activated (License Key Input)
          */
         setup_gravity_contact_form();
+        delete_option("gform_pending_installation");
     }
 
 }
