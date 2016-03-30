@@ -170,7 +170,7 @@ add_action( 'parse_request', 'form_submit_api_endpoint', 0 );
  */
 function form_submit_api_endpoint() {
     global $wp;
-    if ( $wp->query_vars['pagename'] == 'html2wp_api' ) {
+    if ( in_array("html2wp_api", array($wp->query_vars['pagename'], $wp->query_vars['name'], $wp->query_vars['page'])) ) {    
 
         //post vars
         if ( isset( $_POST['gfformname'] ) ) {
