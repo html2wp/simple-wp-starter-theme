@@ -162,15 +162,15 @@ function setup_gravity_contact_form() {
 }
 
 //handle the form submit api endpoint
-add_action( 'parse_request', 'form_submit_api_endpoint', 0 );
+if( ! is_admin() ) add_action( 'init', 'form_submit_api_endpoint' );
 
 /**
  * Handle form submission, this function is called
  * when wordpress detects the api endpoint called
  */
 function form_submit_api_endpoint() {
-    global $wp;
-    if ( in_array("html2wp_api", array($wp->query_vars['pagename'], $wp->query_vars['name'], $wp->query_vars['page'])) ) {    
+
+    if (strpos($_SERVER['REQUEST_URI'], 'action=html2wp_api') !== false) {  
 
         //post vars
         if ( isset( $_POST['gfformname'] ) ) {
