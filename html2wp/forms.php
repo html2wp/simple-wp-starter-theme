@@ -47,7 +47,7 @@ function setup_gravity_contact_form() {
          * corresponding to the Form ID in the Form-config JSON has already been created
          */
         foreach ($forms as $form) {
-            if ($gf_form_name == $form["title"]) {
+            if ($gf_form_id == $form["gfid"]) {
                 //Form has already been created
                 //may be from a bad previous install?
                 $form_created = 1;
