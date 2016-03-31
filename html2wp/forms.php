@@ -31,6 +31,10 @@ function setup_gravity_contact_form() {
     
         //get the name of the form
         $gf_form_name = $this_form_data["gfname"];
+        //get the custom ID of the form
+        //this is the ID we use to detect the form
+        //Gravity Form ID is different and set by gravity forms
+        $gf_form_id = $this_form_data["gfid"];
 
         //Get all available GV Forms
         $forms = GFAPI::get_forms();
@@ -58,7 +62,7 @@ function setup_gravity_contact_form() {
 
             $form = array();
             $form['title'] = $gf_form_name;
-            $form['id'] = 1; //can be any value, GV overrides this anyways
+            $form['gfid'] = $gf_form_id; //custom id for identifying the form
 
             foreach ($this_form_data["data"] as $key=>$elem) {
 
@@ -173,7 +177,7 @@ function form_submit_api_endpoint() {
     if (strpos($_SERVER['REQUEST_URI'], 'action=html2wp_api') !== false) {  
 
         //post vars
-        if ( isset( $_POST['gfformname'] ) ) {
+        if ( isset( $_POST['gfformid'] ) ) {
 
             $entry = array(); //Entry is the data object that we save to GF Forms
             $input_id = 0;
@@ -181,7 +185,8 @@ function form_submit_api_endpoint() {
 
             //TODO: Sanitise this?
             $gf_form_name = $_POST['gfformname'];
-            $gf_form_id = 0;
+            $gf_form_id = $_POST['gfformid']; //this is our custom gfid param passed thru forms as an identifier
+            $actual_gf_form_id = 0; //this is the actual Gravity Forms ID of that form
 
             //unset the form name and form ID fields
             unset($_POST['gfformname']);
@@ -201,8 +206,10 @@ function form_submit_api_endpoint() {
              */
             $form_fields = array();
             foreach ($forms as $form) {
-                if ($gf_form_name == $form["title"]) {
-                    $gf_form_id = $form["id"];
+                if ($gf_form_id == $form["gfid"]) {
+                    //if a form that matches the custom id gfid has been
+                    //found then replace tthe value of gf_form_id with the actual id 
+                    $actual_gf_form_id = $form["id"];
                     $gf_form = $form;
 
                     /**
@@ -228,9 +235,9 @@ function form_submit_api_endpoint() {
             }
 
             //Submit form to GV
-            if ($gf_form_id != 0) {
+            if ($actual_gf_form_id != 0) {
                 $entry['date_created'] = date('Y-m-d G:i');
-                $entry['form_id'] = $gf_form_id;
+                $entry['form_id'] = $actual_gf_form_id;
 
                 $entry_id = GFAPI::add_entry( $entry );
 
