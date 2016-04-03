@@ -1,5 +1,9 @@
 <?php
-//Domain - html2wp-theme
+/**
+ * Setup the form on activation based on settings
+ *
+ * @package html2wp/simple-wp-starter-theme
+ */
 
 define( 'THEME_DOMAIN', 'html2wp_theme');
 define( 'THEME_DIR', get_template_directory() );
@@ -232,7 +236,7 @@ function html2wp_form_submit_api_endpoint() {
 
                 if ( is_wp_error( $entry ) ) {
                    $error_string = $entry->get_error_message();
-                   $response = array(-1, $error_string);
+                   $response = array($error_string);
                 }
 
                 if ($entry_id) {
@@ -250,7 +254,7 @@ function html2wp_form_submit_api_endpoint() {
                         if ("Default Confirmation" == $confirmation["name"] &&
                             1 == $confirmation["isDefault"]) {
                                 if ("message" == $confirmation["type"]) {
-                                    $response = array(1, $confirmation["message"]);
+                                    $response = array($confirmation["message"]);
 
                                 } else if ("page" == $confirmation["type"]) {
                                     $uri = home_url() . "?p=" . $confirmation["pageId"];
@@ -296,10 +300,14 @@ function html2wp_form_submit_api_endpoint() {
             $response = array("Bad Input");
         }
 
+        //Show this if request is AJAX form submit
+        if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') { 
+            header('content-type: application/json; charset=utf-8');
+            echo json_encode($response)."\n";
+            exit;
+        }
 
-        header('content-type: application/json; charset=utf-8');
-        echo json_encode($response)."\n";
-        exit;
+        //this is shown only if it is a regular form submit
 
     }
 }
