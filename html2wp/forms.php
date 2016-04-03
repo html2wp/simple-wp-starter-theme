@@ -170,7 +170,7 @@ function html2wp_form_submit_api_endpoint() {
     if (strpos($_SERVER['REQUEST_URI'], 'action=html2wp_api') !== false) {  
 
         //check post vars, check wp_nonce is valid or not
-        if ( isset( $_POST['gfformid'] ) && isset( $_POST['gfnonce'] ) && wp_verify_nonce( $_POST['gfnonce'], 'key_gfnonce') ) {
+        if ( isset( $_POST['gfformid'] ) && isset( $_POST['gfnonce'] ) && wp_verify_nonce( $_POST['gfnonce'], 'html2wp_key_gfnonce') ) {
 
             $entry = array(); //Entry is the data object that we save to GF Forms
             $input_id = 0;
