@@ -43,7 +43,7 @@ function html2wp_setup_gravity_contact_form() {
      */
     update_option(GRAVITY_PENDING_INSTALLATION, -1);     
     //update_option(GRAVITY_RG_VERSION_KEY, GRAVITY_VERSION);      
-    update(GRAVITY_RG_VERSION_KEY, html2wp_get_gf_version());
+    update_option(GRAVITY_RG_VERSION_KEY, html2wp_get_gf_version());
     
     //Iterate through multiple forms
     foreach ($html2wp_settings["forms"] as $this_form_data) {
