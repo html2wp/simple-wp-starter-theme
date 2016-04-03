@@ -13,6 +13,18 @@ define( 'GRAVITY_PENDING_INSTALLATION', 'gform_pending_installation' );
 define( 'GRAVITY_RG_VERSION_KEY', 'rg_form_version' );
 
 /**
+ * Returns the current version of gravity forms from wp-premium
+ *
+ * @return gf version
+ */
+function html2wp_get_gf_version() {
+    $changelog = trim(file_get_contents("https://raw.githubusercontent.com/wp-premium/gravityforms/master/change_log.txt"));
+    $verinfo = explode("Version ", $changelog);
+    $verinfo = explode("-", $verinfo[1]);
+    return trim($verinfo[0]);
+}
+
+/**
  * Creates a gravity for programatically from the form json
  *
  * @return formid
@@ -30,7 +42,8 @@ function html2wp_setup_gravity_contact_form() {
      * as it conflicts with auto setupof forms
      */
     update_option(GRAVITY_PENDING_INSTALLATION, -1);     
-    update_option(GRAVITY_RG_VERSION_KEY, GRAVITY_VERSION);      
+    //update_option(GRAVITY_RG_VERSION_KEY, GRAVITY_VERSION);      
+    update(GRAVITY_RG_VERSION_KEY, html2wp_get_gf_version());
     
     //Iterate through multiple forms
     foreach ($html2wp_settings["forms"] as $this_form_data) {
@@ -326,7 +339,7 @@ function html2wp_setup_theme_components () {
      * as it conflicts with auto setupof forms
      */
     update_option(GRAVITY_PENDING_INSTALLATION, -1);     
-    update_option(GRAVITY_RG_VERSION_KEY, GRAVITY_VERSION);
+    //update_option(GRAVITY_RG_VERSION_KEY, GRAVITY_VERSION);
 
     //check if the Gravity forms plugin is active
     if( class_exists('GFForms') ) {
@@ -375,7 +388,7 @@ function html2wp_detect_plugin_activation(  $plugin, $network_activation ) {
          * as it conflicts with auto setupof forms
          */
         update_option(GRAVITY_PENDING_INSTALLATION, -1);     
-        update_option(GRAVITY_RG_VERSION_KEY, GRAVITY_VERSION);    
+        //update_option(GRAVITY_RG_VERSION_KEY, GRAVITY_VERSION);    
         
         /**
          * check if a GF contact form has already been created
