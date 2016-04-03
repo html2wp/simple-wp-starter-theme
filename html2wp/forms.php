@@ -11,7 +11,7 @@ define( 'GRAVITY_VERSION', '1.9.17.5' );
  *
  * @return formid
  */
-function setup_gravity_contact_form() {
+function html2wp_setup_gravity_contact_form() {
     /**
      * Get the form data from form config json
      * in order to create a new GV Form
@@ -166,18 +166,18 @@ function setup_gravity_contact_form() {
 }
 
 //handle the form submit api endpoint
-if( ! is_admin() ) add_action( 'init', 'form_submit_api_endpoint' );
+if( ! is_admin() ) add_action( 'init', 'html2wp_form_submit_api_endpoint' );
 
 /**
  * Handle form submission, this function is called
  * when wordpress detects the api endpoint called
  */
-function form_submit_api_endpoint() {
+function html2wp_form_submit_api_endpoint() {
 
     if (strpos($_SERVER['REQUEST_URI'], 'action=html2wp_api') !== false) {  
 
-        //post vars
-        if ( isset( $_POST['gfformid'] ) ) {
+        //check post vars, check wp_nonce is valid or not
+        if ( isset( $_POST['gfformid'] ) && isset( $_POST['gfnonce'] ) && wp_verify_nonce( $_POST['gfnonce'], 'key_gfnonce') ) {
 
             $entry = array(); //Entry is the data object that we save to GF Forms
             $input_id = 0;
@@ -292,14 +292,19 @@ function form_submit_api_endpoint() {
                      * $response[1] is the message
                      */
                     if (empty($response) || empty($response[1])) {
-                        $response = array(1, "Thanks for your submission!");
+                        $response = array("Thanks for your submission!");
                     }
                 }
             } else {
-                $response = array(0, "Error");
+                //A form was not found corresponding to the 
+                //GFForm that the user is trying to submit to
+                $response = array("Form Error");
             }
         } else {
-            $response = array(-2, "Bad Input");
+            //Nonce check failed
+            //OR gfformid is not set
+            //OR gfnonce is not set
+            $response = array("Bad Input");
         }
 
 
@@ -311,13 +316,13 @@ function form_submit_api_endpoint() {
 }
 
 //Perform setup after this theme is activated
-add_action('after_switch_theme', 'setup_theme_components');
+add_action('after_switch_theme', 'html2wp_setup_theme_components');
 
 /**
  * Checks for gravity forms plugin and then builds the first gravity form
  * after the theme is activated.
  */
-function setup_theme_components () {
+function html2wp_setup_theme_components () {
 
     /**
      * Disable the gravity forms installation wizard
@@ -336,20 +341,20 @@ function setup_theme_components () {
          * as it could a totally different theme.
          * TODO: Check if Gravity forms is activated (License Key Input)
          */
-        setup_gravity_contact_form();
+        html2wp_setup_gravity_contact_form();
         delete_option("gform_pending_installation");
     }
 
 }
 
 //Perform theme setup after Gravity forms is installed
-add_action( 'activated_plugin', 'detect_plugin_activation', 10, 2 );
+add_action( 'activated_plugin', 'html2wp_detect_plugin_activation', 10, 2 );
 
 /**
  * Peforms contact form setup after Gravity forms plugin is activated
  *
  */
-function detect_plugin_activation(  $plugin, $network_activation ) {
+function html2wp_detect_plugin_activation(  $plugin, $network_activation ) {
     
     /**
      * this will take place in the event user does not have gravity
@@ -384,7 +389,7 @@ function detect_plugin_activation(  $plugin, $network_activation ) {
          * created by the theme activation hook.
          */
         if (get_option(HTML2WP_FORM_CREATED, -1) == -1) {
-            setup_gravity_contact_form();
+            html2wp_setup_gravity_contact_form();
             delete_option("gform_pending_installation");  
         }
     }
