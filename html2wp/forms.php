@@ -130,21 +130,8 @@ function html2wp_setup_gravity_contact_form() {
                 );
 
                 /**
-                 * setup confirmations for the form,
-                 * message to be displayed after form submit.
-                 * TODO: Remove this section, after discussing. GF Forms already Creates
-                 * one default confirmation. So should we let users know via a WP
-                 * Dashboard Notification about the options for configuring this?
-                 * also should we support multiple confirmations
-                $form['confirmations'] = array(
-                    $unique_id => array(
-                        'isDefault'          => true,
-                        'id'                => $unique_id,
-                        'name'              => 'Default Confirmation',
-                        'type'             => 'message', //values: message, page, redirect
-                        'message'           => 'Thanks for your submission!' //Keys: message, pageid, url+queryString
-                    )
-                );
+                 * Supporting only the default confirmation for now
+                 * 
                 */
 
             }
@@ -341,7 +328,6 @@ function html2wp_setup_theme_components () {
          * Process the setup methods
          * these should occur each time a theme is activated,
          * as it could a totally different theme.
-         * TODO: Check if Gravity forms is activated (License Key Input)
          */
         html2wp_setup_gravity_contact_form();
         delete_option(GRAVITY_PENDING_INSTALLATION);
