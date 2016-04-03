@@ -76,6 +76,10 @@ function html2wp_setup_gravity_contact_form() {
             }
         }
 
+        // $form_to_create = array_filter($forms, function($form, $key) {
+        //     return $gf_form_id == $form["gfid"];
+        // }, ARRAY_FILTER_USE_BOTH);         
+
         //Form has not been created previously, create one now
         if ($form_created == 0) {
 
