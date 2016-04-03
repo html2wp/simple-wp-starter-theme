@@ -327,13 +327,13 @@ function html2wp_form_submit_api_endpoint() {
         //this is shown only if it is a regular form submit
         
         //Header
-        wp_header();
+        get_header();
 
         //print the response message
         echo "<h3>" . $response[0] . "</h3>";
         
         //Footer
-        wp_footer();
+        get_footer();
 
     }
 }
