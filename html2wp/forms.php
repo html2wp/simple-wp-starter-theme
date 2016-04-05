@@ -83,8 +83,7 @@ function html2wp_setup_gravity_contact_form() {
                 switch($elem["tag_name"]) {
                     case "input":
                         $form['fields'][$key]->type = $elem["type"];
-                        
-                        //TODO: Handle for radio and checkbox
+
                         break;
                     case "select":
                         $form['fields'][$key]->type = $elem["tag_name"];
