@@ -58,30 +58,16 @@ function html2wp_setup_gravity_contact_form() {
         //Get all available GV Forms
         $forms = GFAPI::get_forms();
 
-        //Form flag
-        $form_created = 0;
-
         /**
          * Iterate through all GV Forms and look if the form
          * corresponding to the Form ID in the Form-config JSON has already been created
          */
-        foreach ($forms as $form) {
-            if ($gf_form_id == $form["gfid"]) {
-                //Form has already been created
-                //may be from a bad previous install?
-                $form_created = 1;
-                break;
-            } else {
-
-            }
-        }
-
-        // $form_to_create = array_filter($forms, function($form, $key) {
-        //     return $gf_form_id == $form["gfid"];
-        // }, ARRAY_FILTER_USE_BOTH);         
+        $form_to_create = array_filter($forms, function($form) {
+            return $gf_form_id == $form["gfid"];
+        });         
 
         //Form has not been created previously, create one now
-        if ($form_created == 0) {
+        if (empty($form_to_create)) {
 
             $form = array();
             $form['title'] = $gf_form_name;
@@ -89,6 +75,7 @@ function html2wp_setup_gravity_contact_form() {
 
             foreach ($this_form_data["data"] as $key=>$elem) {
 
+                $form['fields'][$key] = new stdClass();
                 /**
                  * this switch is needed as GF Forms treats 'type'
                  * as the html element tag
