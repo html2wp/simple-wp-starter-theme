@@ -62,7 +62,7 @@ function html2wp_setup_gravity_contact_form() {
          * Iterate through all GV Forms and look if the form
          * corresponding to the Form ID in the Form-config JSON has already been created
          */
-        $form_to_create = array_filter($forms, function($form) {
+        $form_to_create = array_filter($forms, function($form) use($gf_form_id) {
             return $gf_form_id == $form["gfid"];
         });         
 
