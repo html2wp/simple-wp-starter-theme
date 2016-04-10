@@ -20,6 +20,9 @@ require_once get_stylesheet_directory() . '/html2wp/extend.php';
 // Custom methods
 require_once get_stylesheet_directory() . '/html2wp/methods.php';
 
+// Form methods
+require_once get_stylesheet_directory() . '/html2wp/forms.php';
+
 /**
  * Note: It is recommended to not add any custom code here if you plan to convert your theme again.
  * Please consider using a child theme instead: http://codex.wordpress.org/Child_Themes
