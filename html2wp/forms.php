@@ -37,127 +37,131 @@ function html2wp_setup_gravity_contact_form() {
 
     global $html2wp_settings;
 
-    /**
-     * Disable the gravity forms installation wizard
-     * as it conflicts with auto setupof forms
-     */
-    update_option(GRAVITY_PENDING_INSTALLATION, -1);     
-    //update_option(GRAVITY_RG_VERSION_KEY, GRAVITY_VERSION);      
-    update_option(GRAVITY_RG_VERSION_KEY, html2wp_get_gf_version());
-    
-    //Iterate through multiple forms
-    foreach ($html2wp_settings["forms"] as $this_form_data) {
-    
-        //get the name of the form
-        $gf_form_name = $this_form_data["gfname"];
-        //get the custom ID of the form
-        //this is the ID we use to detect the form
-        //Gravity Form ID is different and set by gravity forms
-        $gf_form_id = $this_form_data["gfid"];
-
-        //Get all available GV Forms
-        $forms = GFAPI::get_forms();
+    if ( isset($html2wp_settings["forms"]) && !empty($html2wp_settings["forms"]) ) {
 
         /**
-         * Iterate through all GV Forms and look if the form
-         * corresponding to the Form ID in the Form-config JSON has already been created
+         * Disable the gravity forms installation wizard
+         * as it conflicts with auto setupof forms
          */
-        $form_to_create = array_filter($forms, function($form) use($gf_form_id) {
-            return $gf_form_id == $form["gfid"];
-        });         
+        update_option(GRAVITY_PENDING_INSTALLATION, -1);     
+        //update_option(GRAVITY_RG_VERSION_KEY, GRAVITY_VERSION);      
+        update_option(GRAVITY_RG_VERSION_KEY, html2wp_get_gf_version());
+        
+        //Iterate through multiple forms
+        foreach ($html2wp_settings["forms"] as $this_form_data) {
+        
+            //get the name of the form
+            $gf_form_name = $this_form_data["gfname"];
+            //get the custom ID of the form
+            //this is the ID we use to detect the form
+            //Gravity Form ID is different and set by gravity forms
+            $gf_form_id = $this_form_data["gfid"];
 
-        //Form has not been created previously, create one now
-        if (empty($form_to_create)) {
+            //Get all available GV Forms
+            $forms = GFAPI::get_forms();
 
-            $form = array();
-            $form['title'] = $gf_form_name;
-            $form['gfid'] = $gf_form_id; //custom id for identifying the form
-
-            foreach ($this_form_data["data"] as $key=>$elem) {
-
-                $form['fields'][$key] = new stdClass();
-                /**
-                 * this switch is needed as GF Forms treats 'type'
-                 * as the html element tag
-                 */
-                switch($elem["tag_name"]) {
-                    case "input":
-                        $form['fields'][$key]->type = $elem["type"];
-
-                        break;
-                    case "select":
-                        $form['fields'][$key]->type = $elem["tag_name"];
-                        $choices = array();
-                        
-                        //build the choices array
-                        foreach ($elem["options"] as $ekey=>$option) {
-                            $choices[$ekey]["text"] = $option["text"];
-                            $choices[$ekey]["value"] = $option["value"];
-                            $choices[$ekey]["isSelected"] = $option["selected"];
-                        }
-                        $form['fields'][$key]->choices = $choices;
-                        break;
-                    case "textarea":
-                        $form['fields'][$key]->type = $elem["tag_name"];
-                        break;
-                    default:
-                        break;
-                }
-                $form['fields'][$key]->name = $elem["name"];
-                $form['fields'][$key]->inputName = $elem["name"];
-                $form['fields'][$key]->label = $elem["placeholder"];
-                $form['fields'][$key]->isRequired = $elem["required"];
-                
-                /**
-                 * GF Forms needs the id set to generate correct
-                 * name attributes
-                 */
-                $form['fields'][$key]->id = $key;
-                
-                //TODO: Set Honeypot property for spam
-                $unique_id = time();
-                
-                //Notifications needs a 13 character unique ID in GF Forms
-                if ($unique_id <= 13) {
-                    $unique_id = $unique_id . 10*(12 - strlen($unique_id));
-                }
-                $form['notifications'] = array(
-                    $unique_id => array(
-                        'isActive'          => true,
-                        'id'                => $unique_id,
-                        'name'              => 'Admin Notification',
-                        'event'             => 'form_submission',
-                        'to'                => '{admin_email}',
-                        'toType'            => 'email',
-                        'subject'           => 'New submission from {form_title}',
-                        'message'           => '{all_fields}',
-                        'from'              => '{admin_email}',
-                        'disableAutoformat' => false,
-                    )
-                );
-
-                /**
-                 * Supporting only the default confirmation for now
-                 * 
-                */
-
-            }
-
-            //create a form
-            $formid = GFAPI::add_form( $form );
-            //TODO: check for WP_Error and also possibly implement logging
-            
             /**
-             * Store the form ID in theme options, so that
-             * we know gravity forms was run once already
-             * and we need not run the gravity forms setup
-             * methods again with the activated_plugin hook
+             * Iterate through all GV Forms and look if the form
+             * corresponding to the Form ID in the Form-config JSON has already been created
              */
-            if (get_option(HTML2WP_FORM_CREATED, -1) == -1) {
-                update_option( HTML2WP_FORM_CREATED, $formid );
+            $form_to_create = array_filter($forms, function($form) use($gf_form_id) {
+                return $gf_form_id == $form["gfid"];
+            });         
+
+            //Form has not been created previously, create one now
+            if (empty($form_to_create)) {
+
+                $form = array();
+                $form['title'] = $gf_form_name;
+                $form['gfid'] = $gf_form_id; //custom id for identifying the form
+
+                foreach ($this_form_data["data"] as $key=>$elem) {
+
+                    $form['fields'][$key] = new stdClass();
+                    /**
+                     * this switch is needed as GF Forms treats 'type'
+                     * as the html element tag
+                     */
+                    switch($elem["tag_name"]) {
+                        case "input":
+                            $form['fields'][$key]->type = $elem["type"];
+
+                            break;
+                        case "select":
+                            $form['fields'][$key]->type = $elem["tag_name"];
+                            $choices = array();
+                            
+                            //build the choices array
+                            foreach ($elem["options"] as $ekey=>$option) {
+                                $choices[$ekey]["text"] = $option["text"];
+                                $choices[$ekey]["value"] = $option["value"];
+                                $choices[$ekey]["isSelected"] = $option["selected"];
+                            }
+                            $form['fields'][$key]->choices = $choices;
+                            break;
+                        case "textarea":
+                            $form['fields'][$key]->type = $elem["tag_name"];
+                            break;
+                        default:
+                            break;
+                    }
+                    $form['fields'][$key]->name = $elem["name"];
+                    $form['fields'][$key]->inputName = $elem["name"];
+                    $form['fields'][$key]->label = $elem["placeholder"];
+                    $form['fields'][$key]->isRequired = $elem["required"];
+                    
+                    /**
+                     * GF Forms needs the id set to generate correct
+                     * name attributes
+                     */
+                    $form['fields'][$key]->id = $key;
+                    
+                    //TODO: Set Honeypot property for spam
+                    $unique_id = time();
+                    
+                    //Notifications needs a 13 character unique ID in GF Forms
+                    if ($unique_id <= 13) {
+                        $unique_id = $unique_id . 10*(12 - strlen($unique_id));
+                    }
+                    $form['notifications'] = array(
+                        $unique_id => array(
+                            'isActive'          => true,
+                            'id'                => $unique_id,
+                            'name'              => 'Admin Notification',
+                            'event'             => 'form_submission',
+                            'to'                => '{admin_email}',
+                            'toType'            => 'email',
+                            'subject'           => 'New submission from {form_title}',
+                            'message'           => '{all_fields}',
+                            'from'              => '{admin_email}',
+                            'disableAutoformat' => false,
+                        )
+                    );
+
+                    /**
+                     * Supporting only the default confirmation for now
+                     * 
+                    */
+
+                }
+
+                //create a form
+                $formid = GFAPI::add_form( $form );
+                //TODO: check for WP_Error and also possibly implement logging
+                
+                /**
+                 * Store the form ID in theme options, so that
+                 * we know gravity forms was run once already
+                 * and we need not run the gravity forms setup
+                 * methods again with the activated_plugin hook
+                 */
+                if (get_option(HTML2WP_FORM_CREATED, -1) == -1) {
+                    update_option( HTML2WP_FORM_CREATED, $formid );
+                }
+            } else {
             }
-        } else {
         }
+
     }
 }
 

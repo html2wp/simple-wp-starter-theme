@@ -123,6 +123,11 @@ function html2wp_setup_theme_support() {
  */
 function html2wp_register_required_plugins() {
 
+	/**
+	 * Gets us the settings from global scope
+	 */
+	global $html2wp_settings;	
+
 	$plugins = array(
 
 		array(
@@ -131,18 +136,19 @@ function html2wp_register_required_plugins() {
 			'source'           => 'https://github.com/html2wp/simple-live-editor/archive/master.zip',
 			'required'         => true,
 			'force_activation' => true,
-		),
+		)
 
-		array(
+	);
+
+    if ( isset($html2wp_settings["forms"]) && !empty($html2wp_settings["forms"]) ) {
+    	$plugins[] = array(
 			'name'             => 'Gravity Forms',
 			'slug'             => 'gravityforms',
 			'source'           => 'https://github.com/wp-premium/gravityforms/archive/master.zip',
 			'required'         => true,
 			'force_activation' => true,
-		),
-
-
-	);
+		);
+    }	
 
 	tgmpa( $plugins );
 }
