@@ -13,6 +13,9 @@ add_filter( 'wp_title', 'html2wp_extend_wp_title' );
 // Extend the default WP menu function
 add_filter( 'wp_nav_menu_args', 'html2wp_extend_wp_nav_menu_args' );
 
+// Add an additional active class to the currently selected menu item
+add_filter( 'nav_menu_css_class', 'html2wp_add_active_class_to_menu_item' );
+
 
 /**
  * Extend the wp_title function to fix empty title on homepage an to include site description
@@ -51,4 +54,18 @@ function html2wp_extend_wp_nav_menu_args( $args ) {
 	$args['walker'] = new Html2wp_walker_nav_menu;
 
 	return $args;
+}
+
+/**
+ * Add an additional active class to menu elements that already have the current-menu-item class.
+ * @param      array   all classes currently attached to the menu item
+ * @return     array   all existing classes along with the new active class
+ */
+function html2wp_add_active_class_to_menu_item( $classes ) {
+
+	if ( in_array( 'current-menu-item', $classes ) ) {
+		$classes[] = 'active ';
+	}
+
+	return $classes;
 }
