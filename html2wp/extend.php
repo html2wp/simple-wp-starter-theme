@@ -13,9 +13,8 @@ add_filter( 'wp_title', 'html2wp_extend_wp_title' );
 // Extend the default WP menu function
 add_filter( 'wp_nav_menu_args', 'html2wp_extend_wp_nav_menu_args' );
 
-// Add an additional active class to the currently selected menu item, 
-//which already has a class called current-menu-item
-add_filter('nav_menu_css_class' , 'add_active_class_menu_item' , 10 , 2);
+// Add an additional active class to the currently selected menu item
+add_filter( 'nav_menu_css_class', 'html2wp_add_active_class_to_menu_item' );
 
 
 /**
@@ -58,14 +57,15 @@ function html2wp_extend_wp_nav_menu_args( $args ) {
 }
 
 /**
- * Add an additional active class to menu elements that already have the
- * current-menu-item class.
+ * Add an additional active class to menu elements that already have the current-menu-item class.
  * @param      array   all classes currently attached to the menu item
  * @return     array   all existing classes along with the new active class
  */
-function add_active_class_menu_item($classes, $item){
-     if( in_array('current-menu-item', $classes) ){
-             $classes[] = 'active ';
-     }
-     return $classes;
+function html2wp_add_active_class_to_menu_item( $classes ) {
+
+	if ( in_array( 'current-menu-item', $classes ) ) {
+		$classes[] = 'active ';
+	}
+
+	return $classes;
 }
