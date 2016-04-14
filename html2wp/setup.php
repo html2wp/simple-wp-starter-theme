@@ -140,7 +140,7 @@ function html2wp_register_required_plugins() {
 
 	);
 
-    if ( isset($html2wp_settings["forms"]) && !empty($html2wp_settings["forms"]) ) {
+    if ( isset( $html2wp_settings["forms"] ) && !empty( $html2wp_settings["forms"] ) ) {
     	$plugins[] = array(
 			'name'             => 'Gravity Forms',
 			'slug'             => 'gravityforms',

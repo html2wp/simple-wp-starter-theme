@@ -25,10 +25,10 @@ if( ! is_admin() ) {
 }
 
 //Perform setup after this theme is activated
-add_action('after_switch_theme', 'html2wp_setup_theme_components');
+add_action( 'after_switch_theme', 'html2wp_setup_theme_components' );
 
 //Perform theme setup after Gravity forms is installed
-add_action( 'activated_plugin', 'html2wp_detect_plugin_activation', 10, 2 );
+add_action( 'activated_plugin', 'html2wp_detect_plugin_activation' );
 
 /**
  * Returns the current version of gravity forms from wp-premium
@@ -375,7 +375,7 @@ function html2wp_setup_theme_components () {
  * Peforms contact form setup after Gravity forms plugin is activated
  *
  */
-function html2wp_detect_plugin_activation(  $plugin, $network_activation ) {
+function html2wp_detect_plugin_activation(  $plugin ) {
     
     /**
      * this will take place in the event user does not have gravity
