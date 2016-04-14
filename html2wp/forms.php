@@ -140,6 +140,7 @@ function html2wp_setup_gravity_contact_form() {
                     if ($unique_id <= 13) {
                         $unique_id = $unique_id . 10*(12 - strlen($unique_id));
                     }
+                    
                     $form['notifications'] = array(
                         $unique_id => array(
                             'isActive'          => true,
@@ -154,11 +155,6 @@ function html2wp_setup_gravity_contact_form() {
                             'disableAutoformat' => false,
                         )
                     );
-
-                    /**
-                     * Supporting only the default confirmation for now
-                     * 
-                     */
 
                 }
 
