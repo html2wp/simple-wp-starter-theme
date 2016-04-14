@@ -28,12 +28,11 @@ class Html2wp_walker_nav_menu extends Walker_Nav_Menu {
 	 */
 	public function start_lvl( &$output, $depth = 0, $args = array() ) {
 
-		if ( isset( $args->walker_sub_menu_wrapper_type ) )
-		{
+		if ( isset( $args->walker_sub_menu_wrapper_type ) ) {
 			$attributes = '';
 
-			if ( isset( $args->walker_sub_menu_wrapper_attributes ) )
-			{
+			if ( isset( $args->walker_sub_menu_wrapper_attributes ) ) {
+
 				foreach ( $args->walker_sub_menu_wrapper_attributes as $attr => $value ) {
 					if ( ! empty( $value ) ) {
 						$value = ( $link_attribute === $attr ) ? esc_url( $value ) : esc_attr( $value );
@@ -66,8 +65,9 @@ class Html2wp_walker_nav_menu extends Walker_Nav_Menu {
 		$indent = str_repeat("\t", $depth);
 		$output .= "$indent</ul>\n";
 
-		if ( isset( $args->walker_sub_menu_wrapper_type ) )
+		if ( isset( $args->walker_sub_menu_wrapper_type ) ) {
 			$output .= "$indent</" . $args->walker_sub_menu_wrapper_type . ">\n";
+		}
 
 	}
 
@@ -120,8 +120,7 @@ class Html2wp_walker_nav_menu extends Walker_Nav_Menu {
 		$output .= $indent;
 
 		// If we want a list
-		if ( $args->walker_links_in_list )
-		{
+		if ( $args->walker_links_in_list ) {
 
 			$class_names = $wp_class_names ? ' class="' . esc_attr( $wp_class_names ) . '"' : '';
 
@@ -129,25 +128,27 @@ class Html2wp_walker_nav_menu extends Walker_Nav_Menu {
 			$walker_list_item_attributes = $args->walker_list_item_attributes;
 
 			// If no ID set, use the ID possibly provided by WP
-			if ( empty( $args->walker_list_item_attributes['id'] ) && !empty( $wp_id ) )
+			if ( empty( $args->walker_list_item_attributes['id'] ) && ! empty( $wp_id ) ) {
 				$walker_list_item_attributes['id'] = $wp_id;
+			}
 
 			// If WP class names are available append them to the original list
-			if ( !empty( $wp_class_names ) )
-			{
+			if ( ! empty( $wp_class_names ) ) {
+
 				// There is original class names, append the wp class names
-				if ( !empty( $args->walker_list_item_attributes['class'] ) )
+				if ( ! empty( $args->walker_list_item_attributes['class'] ) ) {
 					$walker_list_item_attributes['class'] = $args->walker_list_item_attributes['class'] . ' ' . $wp_class_names;
+				}
 
 				// There is no original class names, just use the wp ones
-				else
+				else {
 					$walker_list_item_attributes['class'] = $wp_class_names;
+				}
 			}
 
 			$output .= '<li';
 
-			foreach ( $walker_list_item_attributes as $key => $value )
-			{
+			foreach ( $walker_list_item_attributes as $key => $value ) {
 				$output .= ' ' . $key . '="' . esc_attr( $value ) . '"';
 			}
 
@@ -156,12 +157,14 @@ class Html2wp_walker_nav_menu extends Walker_Nav_Menu {
 		}
 
 		// Decide the link attribute we want
-		if ( $args->walker_link_type === 'a' )
+		if ( $args->walker_link_type === 'a' ) {
 			$link_attribute = 'href';
+		}
 
 		// If we are not dealing with a native link we use the js way
-		else
+		else {
 			$link_attribute = 'data-href';
+		}
 
 		// Get the original link attributes
 		$atts = $args->walker_link_item_attributes;
@@ -173,22 +176,25 @@ class Html2wp_walker_nav_menu extends Walker_Nav_Menu {
 		$atts[ $link_attribute ]   	= ! empty( $item->url )        ? $item->url        : '';
 
 		// If we have a list we have already outputted some of the info for the li element, otherwise ouput the info now
-		if ( !$args->walker_links_in_list )
-		{
+		if ( !$args->walker_links_in_list ) {
+
 			// If no ID set, use the ID possibly provided by WP
-			if ( empty( $atts['id'] ) && !empty( $wp_id ) )
+			if ( empty( $atts['id'] ) && ! empty( $wp_id ) ) {
 				$atts['id'] = $wp_id;
+			}
 
 			// If WP class names are available append them to the original list
-			if ( !empty( $wp_class_names ) )
-			{
+			if ( ! empty( $wp_class_names ) ) {
+
 				// There is original class names, append the wp class names
-				if ( !empty( $atts['class'] ) )
+				if ( ! empty( $atts['class'] ) ) {
 					$atts['class'] .= ' ' .  $wp_class_names;
+				}
 
 				// There is no original class names, just use the wp ones
-				else
+				else {
 					$atts['class'] = $wp_class_names;
+				}
 			}
 		}
 
@@ -251,7 +257,8 @@ class Html2wp_walker_nav_menu extends Walker_Nav_Menu {
 	public function end_el( &$output, $item, $depth = 0, $args = array() ) {
 
 		// If we want a list
-		if ( $args->walker_links_in_list )
+		if ( $args->walker_links_in_list ) {
 			$output .= "</li>\n";
+		}
 	}
 } // Walker_Nav_Menu
