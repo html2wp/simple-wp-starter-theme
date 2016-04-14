@@ -19,6 +19,17 @@ define( 'HTML2WP_FORM_CREATED', 'html2wp_gf_form_created_once_555' );
 define( 'GRAVITY_PENDING_INSTALLATION', 'gform_pending_installation' );
 define( 'GRAVITY_RG_VERSION_KEY', 'rg_form_version' );
 
+//handle the form submit api endpoint
+if( ! is_admin() ) {
+    add_action( 'init', 'html2wp_form_submit_api_endpoint' );
+}
+
+//Perform setup after this theme is activated
+add_action('after_switch_theme', 'html2wp_setup_theme_components');
+
+//Perform theme setup after Gravity forms is installed
+add_action( 'activated_plugin', 'html2wp_detect_plugin_activation', 10, 2 );
+
 /**
  * Returns the current version of gravity forms from wp-premium
  *
@@ -171,8 +182,7 @@ function html2wp_setup_gravity_contact_form() {
     }
 }
 
-//handle the form submit api endpoint
-if( ! is_admin() ) add_action( 'init', 'html2wp_form_submit_api_endpoint' );
+
 
 /**
  * Handle form submission, this function is called
@@ -334,9 +344,6 @@ function html2wp_form_submit_api_endpoint() {
     }
 }
 
-//Perform setup after this theme is activated
-add_action('after_switch_theme', 'html2wp_setup_theme_components');
-
 /**
  * Checks for gravity forms plugin and then builds the first gravity form
  * after the theme is activated.
@@ -363,9 +370,6 @@ function html2wp_setup_theme_components () {
     }
 
 }
-
-//Perform theme setup after Gravity forms is installed
-add_action( 'activated_plugin', 'html2wp_detect_plugin_activation', 10, 2 );
 
 /**
  * Peforms contact form setup after Gravity forms plugin is activated
