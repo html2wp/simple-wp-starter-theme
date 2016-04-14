@@ -36,10 +36,10 @@ add_action( 'activated_plugin', 'html2wp_detect_plugin_activation' );
  * @return gf version
  */
 function html2wp_get_gf_version() {
-    $changelog = trim(file_get_contents("https://raw.githubusercontent.com/wp-premium/gravityforms/master/change_log.txt"));
-    $verinfo = explode("Version ", $changelog);
-    $verinfo = explode("-", $verinfo[1]);
-    return trim($verinfo[0]);
+    $changelog = trim( file_get_contents( "https://raw.githubusercontent.com/wp-premium/gravityforms/master/change_log.txt" ) );
+    $verinfo = explode( "Version ", $changelog );
+    $verinfo = explode( "-", $verinfo[1] );
+    return trim( $verinfo[0] );
 }
 
 /**
@@ -55,17 +55,17 @@ function html2wp_setup_gravity_contact_form() {
 
     global $html2wp_settings;
 
-    if ( isset($html2wp_settings["forms"]) && !empty($html2wp_settings["forms"]) ) {
+    if ( isset( $html2wp_settings["forms"] ) && ! empty( $html2wp_settings["forms"] ) ) {
 
         /**
          * Disable the gravity forms installation wizard
          * as it conflicts with auto setupof forms
          */
-        update_option(GRAVITY_PENDING_INSTALLATION, -1);     
-        update_option(GRAVITY_RG_VERSION_KEY, html2wp_get_gf_version());
+        update_option( GRAVITY_PENDING_INSTALLATION, -1 );     
+        update_option( GRAVITY_RG_VERSION_KEY, html2wp_get_gf_version() );
         
         //Iterate through multiple forms
-        foreach ($html2wp_settings["forms"] as $this_form_data) {
+        foreach ( $html2wp_settings["forms"] as $this_form_data ) {
         
             //get the name of the form
             $gf_form_name = $this_form_data["gfname"];
@@ -81,25 +81,25 @@ function html2wp_setup_gravity_contact_form() {
              * Iterate through all GV Forms and look if the form
              * corresponding to the Form ID in the Form-config JSON has already been created
              */
-            $form_to_create = array_filter($forms, function($form) use($gf_form_id) {
+            $form_to_create = array_filter( $forms, function( $form ) use( $gf_form_id ) {
                 return $gf_form_id == $form["gfid"];
-            });         
+            } );         
 
             //Form has not been created previously, create one now
-            if (empty($form_to_create)) {
+            if ( empty( $form_to_create ) ) {
 
                 $form = array();
                 $form['title'] = $gf_form_name;
                 $form['gfid'] = $gf_form_id; //custom id for identifying the form
 
-                foreach ($this_form_data["data"] as $key=>$elem) {
+                foreach ( $this_form_data["data"] as $key => $elem ) {
 
                     $form['fields'][$key] = new stdClass();
                     /**
                      * this switch is needed as GF Forms treats 'type'
                      * as the html element tag
                      */
-                    switch($elem["tag_name"]) {
+                    switch( $elem["tag_name"] ) {
                         case "input":
                             $form['fields'][$key]->type = $elem["type"];
 
@@ -158,7 +158,7 @@ function html2wp_setup_gravity_contact_form() {
                     /**
                      * Supporting only the default confirmation for now
                      * 
-                    */
+                     */
 
                 }
 
@@ -172,7 +172,7 @@ function html2wp_setup_gravity_contact_form() {
                  * and we need not run the gravity forms setup
                  * methods again with the activated_plugin hook
                  */
-                if (get_option(HTML2WP_FORM_CREATED, -1) == -1) {
+                if ( get_option( HTML2WP_FORM_CREATED, -1 ) == -1 ) {
                     update_option( HTML2WP_FORM_CREATED, $formid );
                 }
             } else {
@@ -190,7 +190,7 @@ function html2wp_setup_gravity_contact_form() {
  */
 function html2wp_form_submit_api_endpoint() {
 
-    if (strpos($_SERVER['REQUEST_URI'], 'action=html2wp_api') !== false) {  
+    if ( strpos( $_SERVER['REQUEST_URI'], 'action=html2wp_api' ) !== false ) {  
 
         //check post vars, check wp_nonce is valid or not
         if ( isset( $_POST['gfformid'] ) && isset( $_POST['gfnonce'] ) && wp_verify_nonce( $_POST['gfnonce'], 'html2wp_key_gfnonce') ) {
@@ -205,8 +205,8 @@ function html2wp_form_submit_api_endpoint() {
             $actual_gf_form_id = 0; //this is the actual Gravity Forms ID of that form
 
             //unset the form name and form ID fields
-            unset($_POST['gfformname']);
-            unset($_POST['gfformid']);
+            unset( $_POST['gfformname'] );
+            unset( $_POST['gfformid'] );
 
             /**
              * Now get the form ID to which we have to savethe data
@@ -221,8 +221,8 @@ function html2wp_form_submit_api_endpoint() {
              * corresponding to the Form ID in the Form-config JSON has already been created
              */
             $form_fields = array();
-            foreach ($forms as $form) {
-                if ($gf_form_id == $form["gfid"]) {
+            foreach ( $forms as $form ) {
+                if ( $gf_form_id == $form["gfid"] ) {
                     //if a form that matches the custom id gfid has been
                     //found then replace tthe value of gf_form_id with the actual id 
                     $actual_gf_form_id = $form["id"];
@@ -233,7 +233,7 @@ function html2wp_form_submit_api_endpoint() {
                      * we will use this list to weed out any redundant data from
                      * the $_POST array
                      */
-                    foreach ($form["fields"] as $k => $v) {
+                    foreach ( $form["fields"] as $k => $v ) {
                         $form_fields[] = $v->name;
                     }
                     break;
@@ -241,17 +241,17 @@ function html2wp_form_submit_api_endpoint() {
             }
 
             // sanitize form input values
-            foreach ($_POST as $key => $value) {
+            foreach ( $_POST as $key => $value ) {
                 
                 //weed out redundant keys in $_POST
-                if (in_array($key, $form_fields)) {
+                if ( in_array( $key, $form_fields ) ) {
                     $entry["{$input_id}"] = sanitize_text_field($value);
                     $input_id++;
                 }
             }
 
             //Submit form to GV
-            if ($actual_gf_form_id != 0) {
+            if ( $actual_gf_form_id != 0 ) {
                 $entry['date_created'] = date('Y-m-d G:i');
                 $entry['form_id'] = $actual_gf_form_id;
 
@@ -259,37 +259,37 @@ function html2wp_form_submit_api_endpoint() {
 
                 if ( is_wp_error( $entry ) ) {
                    $error_string = $entry->get_error_message();
-                   $response = array($error_string);
+                   $response = array( $error_string );
                 }
 
-                if ($entry_id) {
+                if ( $entry_id ) {
                     $response = array();
 
                     //entry succesful, send notifications
                     GFAPI::send_notifications( $gf_form, $entry );
 
-                    foreach ($gf_form["confirmations"] as $confirmation) {
+                    foreach ( $gf_form["confirmations"] as $confirmation ) {
                         
                         /**
                          * As of now we support configuring only the 'default confirmation'
                          * so let us get what to do with the confirmation
                          */
-                        if ("Default Confirmation" == $confirmation["name"] &&
-                            1 == $confirmation["isDefault"]) {
-                                if ("message" == $confirmation["type"]) {
-                                    $response = array($confirmation["message"]);
+                        if ( "Default Confirmation" == $confirmation["name"] &&
+                            1 == $confirmation["isDefault"] ) {
+                                if ( "message" == $confirmation["type"]) {
+                                    $response = array($confirmation["message"] );
 
-                                } else if ("page" == $confirmation["type"]) {
+                                } else if ( "page" == $confirmation["type"] ) {
                                     $uri = home_url() . "?p=" . $confirmation["pageId"];
-                                    if (!empty($confirmation["queryString"])) {
+                                    if ( ! empty( $confirmation["queryString"] ) ) {
                                         $uri .= "?" . $confirmation["queryString"];
                                     }
                                     wp_redirect( $uri );
                                     exit;
 
-                                } else if ("redirect" == $confirmation["type"]) {
+                                } else if ( "redirect" == $confirmation["type"] ) {
                                     $uri = $confirmation["url"];
-                                    if (!empty($confirmation["queryString"])) {
+                                    if ( ! empty($confirmation["queryString"] ) ) {
                                         $uri .= "?" . $confirmation["queryString"];
                                     }
                                     wp_redirect( $uri );
@@ -307,26 +307,26 @@ function html2wp_form_submit_api_endpoint() {
                      * or if the default confirmation message was was empty.
                      * $response[1] is the message
                      */
-                    if (empty($response) || empty($response[1])) {
-                        $response = array("Thanks for your submission!");
+                    if ( empty( $response ) || empty( $response[1]) ) {
+                        $response = array( "Thanks for your submission!" );
                     }
                 }
             } else {
                 //A form was not found corresponding to the 
                 //GFForm that the user is trying to submit to
-                $response = array("Form Error");
+                $response = array( "Form Error" );
             }
         } else {
             //Nonce check failed
             //OR gfformid is not set
             //OR gfnonce is not set
-            $response = array("Bad Input");
+            $response = array( "Bad Input" );
         }
 
         //Show this if request is AJAX form submit
-        if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') { 
-            header('content-type: application/json; charset=utf-8');
-            echo json_encode($response)."\n";
+        if ( isset($_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) == 'xmlhttprequest' ) { 
+            header( 'content-type: application/json; charset=utf-8' );
+            echo json_encode( $response )."\n";
             exit;
         }
 
@@ -354,10 +354,10 @@ function html2wp_setup_theme_components () {
      * Disable the gravity forms installation wizard
      * as it conflicts with auto setupof forms
      */
-    update_option(GRAVITY_PENDING_INSTALLATION, -1);     
+    update_option( GRAVITY_PENDING_INSTALLATION, -1 );     
 
     //check if the Gravity forms plugin is active
-    if( class_exists('GFForms') ) {
+    if( class_exists( 'GFForms' ) ) {
 
         /**
          * Gravity forms is active
@@ -366,7 +366,7 @@ function html2wp_setup_theme_components () {
          * as it could a totally different theme.
          */
         html2wp_setup_gravity_contact_form();
-        delete_option(GRAVITY_PENDING_INSTALLATION);
+        delete_option( GRAVITY_PENDING_INSTALLATION );
     }
 
 }
@@ -375,7 +375,7 @@ function html2wp_setup_theme_components () {
  * Peforms contact form setup after Gravity forms plugin is activated
  *
  */
-function html2wp_detect_plugin_activation(  $plugin ) {
+function html2wp_detect_plugin_activation( $plugin ) {
     
     /**
      * this will take place in the event user does not have gravity
@@ -387,7 +387,7 @@ function html2wp_detect_plugin_activation(  $plugin ) {
     $plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin );
     
     //if it was the Gravity Forms plugin
-    if ($gf_plugin_name == $plugin_data['Name']) {
+    if ( $gf_plugin_name == $plugin_data['Name'] ) {
 
         /**
          * Since we disable the GFForms wizard, the required
@@ -399,7 +399,7 @@ function html2wp_detect_plugin_activation(  $plugin ) {
          * Disable the gravity forms installation wizard
          * as it conflicts with auto setupof forms
          */
-        update_option(GRAVITY_PENDING_INSTALLATION, -1);         
+        update_option( GRAVITY_PENDING_INSTALLATION, -1 );  
         
         /**
          * check if a GF contact form has already been created
@@ -408,9 +408,9 @@ function html2wp_detect_plugin_activation(  $plugin ) {
          * processed only if a GF contact form was not already
          * created by the theme activation hook.
          */
-        if (get_option(HTML2WP_FORM_CREATED, -1) == -1) {
+        if ( get_option( HTML2WP_FORM_CREATED, -1 ) == -1 ) {
             html2wp_setup_gravity_contact_form();
-            delete_option(GRAVITY_PENDING_INSTALLATION);  
+            delete_option( GRAVITY_PENDING_INSTALLATION );  
         }
     }
 }
