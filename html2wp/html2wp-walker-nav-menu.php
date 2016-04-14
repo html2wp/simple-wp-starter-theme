@@ -85,10 +85,12 @@ class Html2wp_walker_nav_menu extends Walker_Nav_Menu {
 	 * @param int    $id     Current item ID.
 	 */
 	public function start_el( &$output, $item, $depth = 0, $args = array(), $id = 0 ) {
+
 		$indent = ( $depth ) ? str_repeat( "\t", $depth ) : '';
 
 		$classes = empty( $item->classes ) ? array() : (array) $item->classes;
 		$classes[] = 'menu-item-' . $item->ID;
+
 		/**
 		 * Filter the CSS class(es) applied to a menu item's list item element.
 		 *
@@ -99,7 +101,9 @@ class Html2wp_walker_nav_menu extends Walker_Nav_Menu {
 		 * @param array  $args    An array of {@see wp_nav_menu()} arguments.
 		 * @param int    $depth   Depth of menu item. Used for padding.
 		 */
+
 		$wp_class_names = join( ' ', apply_filters( 'nav_menu_css_class', array_filter( $classes ), $item, $args, $depth ) );
+
 		/**
 		 * Filter the ID applied to a menu item's list item element.
 		 *
@@ -121,30 +125,34 @@ class Html2wp_walker_nav_menu extends Walker_Nav_Menu {
 
 			$class_names = $wp_class_names ? ' class="' . esc_attr( $wp_class_names ) . '"' : '';
 
+			//get the walker_list_item_attributes from the $args parameter;
+			$walker_list_item_attributes = $args->walker_list_item_attributes;
+
 			// If no ID set, use the ID possibly provided by WP
 			if ( empty( $args->walker_list_item_attributes['id'] ) && !empty( $wp_id ) )
-				$args->walker_list_item_attributes['id'] = $wp_id;
+				$walker_list_item_attributes['id'] = $wp_id;
 
 			// If WP class names are available append them to the original list
 			if ( !empty( $wp_class_names ) )
 			{
 				// There is original class names, append the wp class names
 				if ( !empty( $args->walker_list_item_attributes['class'] ) )
-					$args->walker_list_item_attributes['class'] .= ' ' .  $wp_class_names;
+					$walker_list_item_attributes['class'] = $args->walker_list_item_attributes['class'] . ' ' . $wp_class_names;
 
 				// There is no original class names, just use the wp ones
 				else
-					$args->walker_list_item_attributes['class'] = $wp_class_names;
+					$walker_list_item_attributes['class'] = $wp_class_names;
 			}
 
 			$output .= '<li';
 
-			foreach ( $args->walker_list_item_attributes as $key => $value )
+			foreach ( $walker_list_item_attributes as $key => $value )
 			{
 				$output .= ' ' . $key . '="' . esc_attr( $value ) . '"';
 			}
 
 			$output .= '>';
+			
 		}
 
 		// Decide the link attribute we want
