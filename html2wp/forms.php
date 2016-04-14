@@ -5,10 +5,17 @@
  * @package html2wp/simple-wp-starter-theme
  */
 
-define( 'THEME_DOMAIN', 'html2wp_theme');
-define( 'THEME_DIR', get_template_directory() );
+/**
+ * This is a wp_option key which is set when a gravity form is created 
+ * for the first time this helps us run the gravity forms setup methods
+ * only the first time when the gravity forms plugin is activated
+ */
 define( 'HTML2WP_FORM_CREATED', 'html2wp_gf_form_created_once_555' );
-define( 'GRAVITY_VERSION', '1.9.17.5' );
+
+/**
+ * These are some gravity forms specific constants needed for the Gravity
+ * forms setup and the wizard. Do not modify these.
+ */
 define( 'GRAVITY_PENDING_INSTALLATION', 'gform_pending_installation' );
 define( 'GRAVITY_RG_VERSION_KEY', 'rg_form_version' );
 
