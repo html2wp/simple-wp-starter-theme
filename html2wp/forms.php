@@ -51,7 +51,6 @@ function html2wp_setup_gravity_contact_form() {
          * as it conflicts with auto setupof forms
          */
         update_option(GRAVITY_PENDING_INSTALLATION, -1);     
-        //update_option(GRAVITY_RG_VERSION_KEY, GRAVITY_VERSION);      
         update_option(GRAVITY_RG_VERSION_KEY, html2wp_get_gf_version());
         
         //Iterate through multiple forms
@@ -349,7 +348,6 @@ function html2wp_setup_theme_components () {
      * as it conflicts with auto setupof forms
      */
     update_option(GRAVITY_PENDING_INSTALLATION, -1);     
-    //update_option(GRAVITY_RG_VERSION_KEY, GRAVITY_VERSION);
 
     //check if the Gravity forms plugin is active
     if( class_exists('GFForms') ) {
@@ -397,8 +395,7 @@ function html2wp_detect_plugin_activation(  $plugin, $network_activation ) {
          * Disable the gravity forms installation wizard
          * as it conflicts with auto setupof forms
          */
-        update_option(GRAVITY_PENDING_INSTALLATION, -1);     
-        //update_option(GRAVITY_RG_VERSION_KEY, GRAVITY_VERSION);    
+        update_option(GRAVITY_PENDING_INSTALLATION, -1);         
         
         /**
          * check if a GF contact form has already been created
