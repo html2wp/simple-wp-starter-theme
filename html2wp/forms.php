@@ -19,10 +19,9 @@ define( 'HTML2WP_FORM_CREATED', 'html2wp_gf_form_created_once_555' );
 define( 'GRAVITY_PENDING_INSTALLATION', 'gform_pending_installation' );
 define( 'GRAVITY_RG_VERSION_KEY', 'rg_form_version' );
 
-//handle the form submit api endpoint
-if( ! is_admin() ) {
-    add_action( 'init', 'html2wp_form_submit_api_endpoint' );
-}
+//Add the required actions for using WP Ajax
+add_action( 'wp_ajax_nopriv_html2wp_form_submit', 'html2wp_form_submit' );
+add_action( 'wp_ajax_html2wp_form_submit', 'html2wp_form_submit' );
 
 /**
  * Returns the current version of gravity forms from wp-premium
@@ -183,158 +182,155 @@ function html2wp_setup_gravity_contact_form() {
  * Handle form submission, this function is called
  * when wordpress detects the api endpoint called
  */
-function html2wp_form_submit_api_endpoint() {
+function html2wp_form_submit() {
 
-    if ( strpos( $_SERVER['REQUEST_URI'], 'action=html2wp_api' ) !== false ) {  
+    //check post vars, check wp_nonce is valid or not
+    if ( isset( $_POST['gfformid'] ) && isset( $_POST['gfnonce'] ) && wp_verify_nonce( $_POST['gfnonce'], 'html2wp_key_gfnonce') ) {
 
-        //check post vars, check wp_nonce is valid or not
-        if ( isset( $_POST['gfformid'] ) && isset( $_POST['gfnonce'] ) && wp_verify_nonce( $_POST['gfnonce'], 'html2wp_key_gfnonce') ) {
+        $entry = array(); //Entry is the data object that we save to GF Forms
+        $input_id = 0;
+        $gf_form = array();
 
-            $entry = array(); //Entry is the data object that we save to GF Forms
-            $input_id = 0;
-            $gf_form = array();
+        //TODO: Sanitise this?
+        $gf_form_name = $_POST['gfformname'];
+        $gf_form_id = $_POST['gfformid']; //this is our custom gfid param passed thru forms as an identifier
+        $actual_gf_form_id = 0; //this is the actual Gravity Forms ID of that form
 
-            //TODO: Sanitise this?
-            $gf_form_name = $_POST['gfformname'];
-            $gf_form_id = $_POST['gfformid']; //this is our custom gfid param passed thru forms as an identifier
-            $actual_gf_form_id = 0; //this is the actual Gravity Forms ID of that form
+        //unset the form name and form ID fields
+        unset( $_POST['gfformname'] );
+        unset( $_POST['gfformid'] );
 
-            //unset the form name and form ID fields
-            unset( $_POST['gfformname'] );
-            unset( $_POST['gfformid'] );
+        /**
+         * Now get the form ID to which we have to savethe data
+         * using the form name that was passed ast the data request
+         */
 
-            /**
-             * Now get the form ID to which we have to savethe data
-             * using the form name that was passed ast the data request
-             */
+        //Get all available GV Forms
+        $forms = GFAPI::get_forms();
 
-            //Get all available GV Forms
-            $forms = GFAPI::get_forms();
+        /**
+         * Iterate through all GV Forms and look if the form
+         * corresponding to the Form ID in the Form-config JSON has already been created
+         */
+        $form_fields = array();
+        foreach ( $forms as $form ) {
+            if ( $gf_form_id == $form["gfid"] ) {
+                //if a form that matches the custom id gfid has been
+                //found then replace tthe value of gf_form_id with the actual id 
+                $actual_gf_form_id = $form["id"];
+                $gf_form = $form;
 
-            /**
-             * Iterate through all GV Forms and look if the form
-             * corresponding to the Form ID in the Form-config JSON has already been created
-             */
-            $form_fields = array();
-            foreach ( $forms as $form ) {
-                if ( $gf_form_id == $form["gfid"] ) {
-                    //if a form that matches the custom id gfid has been
-                    //found then replace tthe value of gf_form_id with the actual id 
-                    $actual_gf_form_id = $form["id"];
-                    $gf_form = $form;
+                /**
+                 * let us get the list of the data field in this form_object
+                 * we will use this list to weed out any redundant data from
+                 * the $_POST array
+                 */
+                foreach ( $form["fields"] as $k => $v ) {
+                    $form_fields[] = $v->name;
+                }
+                break;
+            }
+        }
 
+        // sanitize form input values
+        foreach ( $_POST as $key => $value ) {
+            
+            //weed out redundant keys in $_POST
+            if ( in_array( $key, $form_fields ) ) {
+                $entry["{$input_id}"] = sanitize_text_field($value);
+                $input_id++;
+            }
+        }
+
+        //Submit form to GV
+        if ( $actual_gf_form_id != 0 ) {
+            $entry['date_created'] = date('Y-m-d G:i');
+            $entry['form_id'] = $actual_gf_form_id;
+
+            $entry_id = GFAPI::add_entry( $entry );
+
+            if ( is_wp_error( $entry ) ) {
+               $error_string = $entry->get_error_message();
+               $response = array( $error_string );
+            }
+
+            if ( $entry_id ) {
+                $response = array();
+
+                //entry succesful, send notifications
+                GFAPI::send_notifications( $gf_form, $entry );
+
+                foreach ( $gf_form["confirmations"] as $confirmation ) {
+                    
                     /**
-                     * let us get the list of the data field in this form_object
-                     * we will use this list to weed out any redundant data from
-                     * the $_POST array
+                     * As of now we support configuring only the 'default confirmation'
+                     * so let us get what to do with the confirmation
                      */
-                    foreach ( $form["fields"] as $k => $v ) {
-                        $form_fields[] = $v->name;
-                    }
-                    break;
-                }
-            }
+                    if ( "Default Confirmation" == $confirmation["name"] &&
+                        1 == $confirmation["isDefault"] ) {
+                            if ( "message" == $confirmation["type"]) {
+                                $response = array($confirmation["message"] );
 
-            // sanitize form input values
-            foreach ( $_POST as $key => $value ) {
-                
-                //weed out redundant keys in $_POST
-                if ( in_array( $key, $form_fields ) ) {
-                    $entry["{$input_id}"] = sanitize_text_field($value);
-                    $input_id++;
-                }
-            }
-
-            //Submit form to GV
-            if ( $actual_gf_form_id != 0 ) {
-                $entry['date_created'] = date('Y-m-d G:i');
-                $entry['form_id'] = $actual_gf_form_id;
-
-                $entry_id = GFAPI::add_entry( $entry );
-
-                if ( is_wp_error( $entry ) ) {
-                   $error_string = $entry->get_error_message();
-                   $response = array( $error_string );
-                }
-
-                if ( $entry_id ) {
-                    $response = array();
-
-                    //entry succesful, send notifications
-                    GFAPI::send_notifications( $gf_form, $entry );
-
-                    foreach ( $gf_form["confirmations"] as $confirmation ) {
-                        
-                        /**
-                         * As of now we support configuring only the 'default confirmation'
-                         * so let us get what to do with the confirmation
-                         */
-                        if ( "Default Confirmation" == $confirmation["name"] &&
-                            1 == $confirmation["isDefault"] ) {
-                                if ( "message" == $confirmation["type"]) {
-                                    $response = array($confirmation["message"] );
-
-                                } else if ( "page" == $confirmation["type"] ) {
-                                    $uri = home_url() . "?p=" . $confirmation["pageId"];
-                                    if ( ! empty( $confirmation["queryString"] ) ) {
-                                        $uri .= "?" . $confirmation["queryString"];
-                                    }
-                                    wp_redirect( $uri );
-                                    exit;
-
-                                } else if ( "redirect" == $confirmation["type"] ) {
-                                    $uri = $confirmation["url"];
-                                    if ( ! empty($confirmation["queryString"] ) ) {
-                                        $uri .= "?" . $confirmation["queryString"];
-                                    }
-                                    wp_redirect( $uri );
-                                    exit;
+                            } else if ( "page" == $confirmation["type"] ) {
+                                $uri = home_url() . "?p=" . $confirmation["pageId"];
+                                if ( ! empty( $confirmation["queryString"] ) ) {
+                                    $uri .= "?" . $confirmation["queryString"];
                                 }
+                                wp_redirect( $uri );
+                                exit;
 
-                                //exit the loop
-                                break;
+                            } else if ( "redirect" == $confirmation["type"] ) {
+                                $uri = $confirmation["url"];
+                                if ( ! empty($confirmation["queryString"] ) ) {
+                                    $uri .= "?" . $confirmation["queryString"];
+                                }
+                                wp_redirect( $uri );
+                                exit;
                             }
-                    }
 
-                    /**
-                     * Set the default form submission success message
-                     * if the response was not set from the Default Confirmations above
-                     * or if the default confirmation message was was empty.
-                     * $response[1] is the message
-                     */
-                    if ( empty( $response ) || empty( $response[1]) ) {
-                        $response = array( "Thanks for your submission!" );
-                    }
+                            //exit the loop
+                            break;
+                        }
                 }
-            } else {
-                //A form was not found corresponding to the 
-                //GFForm that the user is trying to submit to
-                $response = array( "Form Error" );
+
+                /**
+                 * Set the default form submission success message
+                 * if the response was not set from the Default Confirmations above
+                 * or if the default confirmation message was was empty.
+                 * $response[1] is the message
+                 */
+                if ( empty( $response ) || empty( $response[1]) ) {
+                    $response = array( "Thanks for your submission!" );
+                }
             }
         } else {
-            //Nonce check failed
-            //OR gfformid is not set
-            //OR gfnonce is not set
-            $response = array( "Bad Input" );
+            //A form was not found corresponding to the 
+            //GFForm that the user is trying to submit to
+            $response = array( "Form Error" );
         }
-
-        //Show this if request is AJAX form submit
-        if ( isset($_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) == 'xmlhttprequest' ) { 
-            header( 'content-type: application/json; charset=utf-8' );
-            echo json_encode( $response )."\n";
-            exit;
-        }
-
-        //this is shown only if it is a regular form submit
-        
-        //Header
-        get_header();
-
-        //print the response message
-        echo "<h3>" . $response[0] . "</h3>";
-        
-        //Footer
-        get_footer();
-
+    } else {
+        //Nonce check failed
+        //OR gfformid is not set
+        //OR gfnonce is not set
+        $response = array( "Bad Input" );
     }
+
+    //Show this if request is AJAX form submit
+    if ( isset($_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) == 'xmlhttprequest' ) { 
+        header( 'content-type: application/json; charset=utf-8' );
+        echo json_encode( $response )."\n";
+        exit;
+    }
+
+    //this is shown only if it is a regular form submit
+    
+    //Header
+    get_header();
+
+    //print the response message
+    echo "<h3>" . $response[0] . "</h3>";
+    
+    //Footer
+    get_footer();
+
 }
