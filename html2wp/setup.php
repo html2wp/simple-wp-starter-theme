@@ -141,7 +141,7 @@ function html2wp_register_required_plugins() {
 	);
 
     if ( isset( $html2wp_settings["forms"] ) && !empty( $html2wp_settings["forms"] ) ) {
-    	$plugins[] = array(
+		$plugins[] = array(
 			'name'             => 'Gravity Forms',
 			'slug'             => 'gravityforms',
 			'source'           => 'https://github.com/wp-premium/gravityforms/archive/master.zip',
