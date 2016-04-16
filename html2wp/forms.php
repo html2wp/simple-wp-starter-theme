@@ -86,6 +86,11 @@ function html2wp_setup_gravity_contact_form() {
                 $form['title'] = $gf_form_name;
                 $form['gfid'] = $gf_form_id; //custom id for identifying the form
 
+                /**
+                 * Now we go through the form data and based on the type of the element
+                 * input or select or textarea, we set the requisite values for the forms
+                 * array needed by Gravity Forms creation routine (GFAPI::add_form)
+                 */
                 foreach ( $this_form_data["data"] as $key => $elem ) {
 
                     $form['fields'][$key] = new stdClass();
