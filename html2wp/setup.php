@@ -34,7 +34,7 @@ $html2wp_settings = json_decode( file_get_contents( get_template_directory() . '
 /**
  * Set up the theme on activation
  */
-function html2wp_theme_activation () {
+function html2wp_theme_activation() {
 
 	/**
 	 * Gets us the settings from global scope
@@ -92,7 +92,7 @@ function html2wp_theme_activation () {
 /**
  * Sets up theme defaults and registers support for various WordPress features.
  */
-function html2wp_register_content () {
+function html2wp_register_content() {
 
 	/**
 	 * Gets us the settings from global scope
@@ -146,7 +146,7 @@ function html2wp_register_required_plugins() {
 
 	);
 
-    if ( isset( $html2wp_settings["forms"] ) && !empty( $html2wp_settings["forms"] ) ) {
+	if ( isset( $html2wp_settings['forms'] ) && ! empty( $html2wp_settings['forms'] ) ) {
 		$plugins[] = array(
 			'name'             => 'Gravity Forms',
 			'slug'             => 'gravityforms',
@@ -154,7 +154,7 @@ function html2wp_register_required_plugins() {
 			'required'         => true,
 			'force_activation' => true,
 		);
-    }	
+	}	
 
 	tgmpa( $plugins );
 }
@@ -163,69 +163,69 @@ function html2wp_register_required_plugins() {
  * Checks for gravity forms plugin and then builds the first gravity form
  * after the theme is activated.
  */
-function html2wp_setup_theme_components () {
+function html2wp_setup_theme_components() {
 
-    /**
-     * Disable the gravity forms installation wizard
-     * as it conflicts with auto setupof forms
-     */
-    update_option( GRAVITY_PENDING_INSTALLATION, -1 );     
+	/**
+	 * Disable the gravity forms installation wizard
+	 * as it conflicts with auto setupof forms
+	 */
+	update_option( GRAVITY_PENDING_INSTALLATION, -1 );     
 
-    //check if the Gravity forms plugin is active
-    if( class_exists( 'GFForms' ) ) {
+	//check if the Gravity forms plugin is active
+	if ( class_exists( 'GFForms' ) ) {
 
-        /**
-         * Gravity forms is active
-         * Process the setup methods
-         * these should occur each time a theme is activated,
-         * as it could a totally different theme.
-         */
-        html2wp_setup_gravity_contact_form();
-        delete_option( GRAVITY_PENDING_INSTALLATION );
-    }
+		/**
+		 * Gravity forms is active
+		 * Process the setup methods
+		 * these should occur each time a theme is activated,
+		 * as it could a totally different theme.
+		 */
+		html2wp_setup_gravity_contact_form();
+		delete_option( GRAVITY_PENDING_INSTALLATION );
+	}
 
 }
 
 /**
  * Peforms contact form setup after Gravity forms plugin is activated
- *
+ * @param  string $plugin The name of the plugin that was activated
  */
 function html2wp_detect_plugin_activation( $plugin ) {
-    
-    /**
-     * this will take place in the event user does not have gravity
-     * forms already installed and imo this will be the most common case
-     */
-    $gf_plugin_name = "Gravity Forms";
 
-    //get the details of the plugin which was just activated
-    $plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin );
-    
-    //if it was the Gravity Forms plugin
-    if ( $gf_plugin_name == $plugin_data['Name'] ) {
+	/**
+	 * this will take place in the event user does not have gravity
+	 * forms already installed and imo this will be the most common case
+	 */
+	$gf_plugin_name = 'Gravity Forms';
 
-        /**
-         * Since we disable the GFForms wizard, the required
-         * tables are not created.
-         */
-        GFForms::setup_database();
+	//get the details of the plugin which was just activated
+	$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin );
 
-        /**
-         * Disable the gravity forms installation wizard
-         * as it conflicts with auto setupof forms
-         */
-        update_option( GRAVITY_PENDING_INSTALLATION, -1 );  
-        
-        /**
-         * check if a GF contact form has already been created
-         * if yes then deactivating or reactivating should not
-         * process the setup methods. These methods should be
-         * processed only if a GF contact form was not already
-         * created by the theme activation hook.
-         */
-        if ( get_option( HTML2WP_FORM_CREATED, -1 ) == -1 ) {
-            html2wp_setup_gravity_contact_form();
-            delete_option( GRAVITY_PENDING_INSTALLATION );  
-        }
-    }
+	//if it was the Gravity Forms plugin
+	if ( $gf_plugin_name === $plugin_data['Name'] ) {
+
+		/**
+		 * Since we disable the GFForms wizard, the required
+		 * tables are not created.
+		 */
+		GFForms::setup_database();
+
+		/**
+		 * Disable the gravity forms installation wizard
+		 * as it conflicts with auto setupof forms
+		 */
+		update_option( GRAVITY_PENDING_INSTALLATION, -1 );  
+
+		/**
+		 * check if a GF contact form has already been created
+		 * if yes then deactivating or reactivating should not
+		 * process the setup methods. These methods should be
+		 * processed only if a GF contact form was not already
+		 * created by the theme activation hook.
+		 */
+		if ( get_option( HTML2WP_FORM_CREATED, -1 ) === -1 ) {
+			html2wp_setup_gravity_contact_form();
+			delete_option( GRAVITY_PENDING_INSTALLATION );  
+		}
+	}
 }
