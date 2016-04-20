@@ -193,7 +193,7 @@ function html2wp_form_submit() {
 
 		//TODO: Sanitize this?
 		$gf_form_name = $_POST['gfformname'];
-		$gf_form_id = intval($_POST['gfformid']); //this is our custom gfid param passed thru forms as an identifier
+		$gf_form_id = (double) $_POST['gfformid']; //this is our custom gfid param passed thru forms as an identifier
 		$actual_gf_form_id = 0; //this is the actual Gravity Forms ID of that form
 
 		//unset the form name and form ID fields
@@ -216,7 +216,7 @@ function html2wp_form_submit() {
 
 		foreach ( $forms as $form ) {
 
-			if ( $gf_form_id === $form['gfid'] ) {
+			if ( $gf_form_id === (double) $form['gfid'] ) {
 
 				//if a form that matches the custom id gfid has been
 				//found then replace tthe value of gf_form_id with the actual id 
