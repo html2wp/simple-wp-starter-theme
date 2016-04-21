@@ -184,6 +184,8 @@ function html2wp_setup_gravity_contact_form() {
  */
 function html2wp_form_submit() {
 
+	$success = 0;
+	
 	//check post vars, check wp_nonce is valid or not
 	if ( isset( $_POST['gfformid'] ) && isset( $_POST['gfnonce'] ) && wp_verify_nonce( $_POST['gfnonce'], 'html2wp_key_gfnonce') ) {
 
@@ -273,9 +275,10 @@ function html2wp_form_submit() {
 					 */
 					if ( 'Default Confirmation' === $confirmation['name'] &&
 						true === $confirmation['isDefault'] ) {
-
+						
 						if ( 'message' === $confirmation['type'] ) {
-							$response = array( 'message' => $confirmation['message'], 'success' => 1 );
+							$success = 1;
+							$response = array( $confirmation['message'] );
 
 						} else if ( 'page' === $confirmation['type'] ) {
 							$uri = home_url() . '?p=' . $confirmation['pageId'];
@@ -306,20 +309,25 @@ function html2wp_form_submit() {
 				 * $response[1] is the message
 				 */
 				if ( empty( $response ) || empty( $response['message']) ) {
-					$response = array( 'message' => 'Thanks for your submission!', 'success' => 1 );
+					$success = 1;
+					$response = array( 'Thanks for your submission!' );
 				}
 			}
 		} else {
 			//A form was not found corresponding to the 
 			//GFForm that the user is trying to submit to
-			$response = array( 'message' => 'Form Error', 'success' => -1 );
+			$success = -1;
+			$response = array( 'Form Not Found' );
 		}
 	} else {
 		//Nonce check failed
 		//OR gfformid is not set
 		//OR gfnonce is not set
-		$response = array( 'message' => 'Bad Input', 'success' => -2 );
+		$success = -2;
+		$response = array( 'Bad Input' );
 	}
+
+
 
 	//Show this if request is AJAX form submit
 	if ( isset($_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) == 'xmlhttprequest' ) { 

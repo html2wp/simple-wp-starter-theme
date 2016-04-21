@@ -33,25 +33,26 @@
         vertical-align: middle;         
     }      
     #form-submit-wrapper p {
-        /*color: ;*/
+        color: #424242;
         font-size: 18px;
     } 
     #form-submit-wrapper p a {
         text-decoration: underline;
+        color: #424242;
     }            
 </style>
 </head>
 <body>
     <div id="form-submit-wrapper">
-    <?php if ($response['success'] == 1) { ?>
+    <?php if ($success == 1) { ?>
     <div class="success">
-        <h1><?php echo $response['message']; ?></h1>
+        <h1><?php echo $response[0]; ?></h1>
         <p><a href="<?= get_site_url(); ?>">Go home</a></p>
     </div>
     <?php } else { ?>
     <div class="error">
         <h1>There was an error submitting your form.</h1>
-        <p>Error: <?php echo $response['message']; ?></p>
+        <p>Error: <?php echo $response[0]; ?></p>
         <p>Please try again. <a href="javascript: window.history.back();">Go back</a></p>
     </div>
     <?php } ?>
