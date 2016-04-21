@@ -329,13 +329,6 @@ function html2wp_form_submit() {
 	}
 
 	//this is shown only if it is a regular form submit
-	
-	//Header
-	get_header();
-
-	//print the response message
-	echo '<h3>' . $response[0] . '</h3>';
-	
-	//Footer
-	get_footer();
+	include ( get_template_directory() . "/template-form-submit.php" );
+	exit;
 }
