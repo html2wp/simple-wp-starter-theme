@@ -272,10 +272,10 @@ function html2wp_form_submit() {
 					 * so let us get what to do with the confirmation
 					 */
 					if ( 'Default Confirmation' === $confirmation['name'] &&
-						1 === $confirmation['isDefault'] ) {
+						true === $confirmation['isDefault'] ) {
 
 						if ( 'message' === $confirmation['type'] ) {
-							$response = array($confirmation['message'] );
+							$response = array( 'message' => $confirmation['message'], 'success' => 1 );
 
 						} else if ( 'page' === $confirmation['type'] ) {
 							$uri = home_url() . '?p=' . $confirmation['pageId'];
@@ -305,20 +305,20 @@ function html2wp_form_submit() {
 				 * or if the default confirmation message was was empty.
 				 * $response[1] is the message
 				 */
-				if ( empty( $response ) || empty( $response[1]) ) {
-					$response = array( 'Thanks for your submission!' );
+				if ( empty( $response ) || empty( $response['message']) ) {
+					$response = array( 'message' => 'Thanks for your submission!', 'success' => 1 );
 				}
 			}
 		} else {
 			//A form was not found corresponding to the 
 			//GFForm that the user is trying to submit to
-			$response = array( 'Form Error' );
+			$response = array( 'message' => 'Form Error', 'success' => -1 );
 		}
 	} else {
 		//Nonce check failed
 		//OR gfformid is not set
 		//OR gfnonce is not set
-		$response = array( 'Bad Input' );
+		$response = array( 'message' => 'Bad Input', 'success' => -2 );
 	}
 
 	//Show this if request is AJAX form submit
