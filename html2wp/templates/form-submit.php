@@ -8,7 +8,7 @@
 
 	<style>
 
-		@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600");
+		@import url( "https://fonts.googleapis.com/css?family=Source+Sans+Pro:400" );
 
 		html,
 		body,
@@ -23,7 +23,7 @@
 			font-family: 'Source Sans Pro', sans-serif;
 			font-size: 16px;
 			-webkit-font-smoothing: antialiased;
-			font-weight: 600;
+			font-weight: 400;
 			color: #242C39;
 		}
 		.container {
@@ -36,9 +36,6 @@
 			display: table-cell;
 			vertical-align: middle;         
 		}
-		h1 {
-			font-weight: 400;
-		}
 		.success h1 {
 			color: #1dd637;
 		}
@@ -49,6 +46,7 @@
 			font-size: 18px;
 		}
 		a {
+			color: #242C39;
 			text-decoration: underline;
 		}
 
