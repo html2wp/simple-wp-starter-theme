@@ -184,6 +184,8 @@ function html2wp_setup_gravity_contact_form() {
  */
 function html2wp_form_submit() {
 
+	$success = false;
+	
 	//check post vars, check wp_nonce is valid or not
 	if ( isset( $_POST['gfformid'] ) && isset( $_POST['gfnonce'] ) && wp_verify_nonce( $_POST['gfnonce'], 'html2wp_key_gfnonce') ) {
 
@@ -272,10 +274,11 @@ function html2wp_form_submit() {
 					 * so let us get what to do with the confirmation
 					 */
 					if ( 'Default Confirmation' === $confirmation['name'] &&
-						1 === $confirmation['isDefault'] ) {
-
+						true === $confirmation['isDefault'] ) {
+						
 						if ( 'message' === $confirmation['type'] ) {
-							$response = array($confirmation['message'] );
+							$success = true;
+							$response = array( $confirmation['message'] );
 
 						} else if ( 'page' === $confirmation['type'] ) {
 							$uri = home_url() . '?p=' . $confirmation['pageId'];
@@ -305,37 +308,35 @@ function html2wp_form_submit() {
 				 * or if the default confirmation message was was empty.
 				 * $response[1] is the message
 				 */
-				if ( empty( $response ) || empty( $response[1]) ) {
-					$response = array( 'Thanks for your submission!' );
+				if ( empty( $response ) || empty( $response['message']) ) {
+					$success = true;
+					$response = array( 'Thank you for your submission!' );
 				}
 			}
 		} else {
 			//A form was not found corresponding to the 
 			//GFForm that the user is trying to submit to
-			$response = array( 'Form Error' );
+			$success = false;
+			$response = array( 'Form Not Found' );
 		}
 	} else {
 		//Nonce check failed
 		//OR gfformid is not set
 		//OR gfnonce is not set
+		$success = false;
 		$response = array( 'Bad Input' );
 	}
 
+
+
 	//Show this if request is AJAX form submit
-	if ( isset($_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) == 'xmlhttprequest' ) { 
+	if ( isset($_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) === 'xmlhttprequest' ) { 
 		header( 'content-type: application/json; charset=utf-8' );
 		echo json_encode( $response );
 		exit;
 	}
 
 	//this is shown only if it is a regular form submit
-	
-	//Header
-	get_header();
-
-	//print the response message
-	echo '<h3>' . $response[0] . '</h3>';
-	
-	//Footer
-	get_footer();
+	include ( get_stylesheet_directory() . '/html2wp/templates/form-submit.php' );
+	exit;
 }
