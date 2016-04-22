@@ -226,21 +226,40 @@ function html2wp_setup_menu_links() {
 
 		    	$slug = "";
 
+		    	// is this slug a hash anchor or an actual link
+		    	$isHash = true;
+
 		    	// get the page slug for this menu link
 		    	foreach ( $html2wp_settings['pages'] as $page ) {
 		    		if ( $link['link'] === $page['file_name'] ) {
 		    			$slug = $page['slug'];
+		    			$isHash = false;
 		    			break;
 		    		}
 		    	}
 
+		    	if ( $isHash ) {
+		    		// this is a hash anchor, so set it accordingly
+		    		$slug = $link['link'];
+		    	}
+
 		    	// Update the menu item
 		    	if ( !empty( $slug ) ) {
-					wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link['text'],
-				                                           'menu-item-object' => 'page',
-				                                           'menu-item-object-id' => get_page_by_path($slug)->ID,
-				                                           'menu-item-type' => 'post_type',
-				                                           'menu-item-status' => 'publish'));		    	
+		    		if ( $isHash ) {
+
+						wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link['text'],
+															'menu-item-url' => $slug,
+				                                        	'menu-item-status' => 'publish'));
+		    		} else {
+						
+						// this is an actual url with a page, so get the slug and set the
+						// menu-item-object-id to the slug id
+						wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link['text'],
+				                                        	'menu-item-object' => 'page',
+				                                        	'menu-item-object-id' => get_page_by_path($slug)->ID,
+				                                        	'menu-item-type' => 'post_type',
+				                                        	'menu-item-status' => 'publish'));
+					}
 				}
 		    }
 
