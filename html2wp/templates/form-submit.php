@@ -10,18 +10,25 @@
 
 		@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600");
 
-		body {
+		html,
+		body,
+		.container {
 			margin: 0;
+			height: 100%;
+			width: 100%;
+		}
+
+		body {
+			background-color: #ffffff;
 			font-family: 'Source Sans Pro', sans-serif;
 			font-size: 16px;
 			-webkit-font-smoothing: antialiased;
 			font-weight: 600;
+			color: #242C39;
 		}
 		.container {
 			text-align: center;
 			position: absolute;
-			height: 100%;
-			width: 100%;
 			display: table;        
 			text-align: center;
 		}
@@ -33,18 +40,16 @@
 			font-weight: 400;
 		}
 		.success h1 {
-			color: #34B73A;
+			color: #1dd637;
 		}
 		.error h1 {
-			color: #F93F3F;
+			color: #ff0000;
 		}
 		p {
-			color: #424242;
 			font-size: 18px;
 		}
 		a {
 			text-decoration: underline;
-			color: #424242;
 		}
 
 	</style>
@@ -54,7 +59,7 @@
 		<?php if ( $success ) : ?>
 			<div class="vertical-center success">
 				<h1><?php echo $response[0]; ?></h1>
-				<p><a href="<?php get_site_url(); ?>">Go home</a></p>
+				<p><a href="<?= get_site_url(); ?>">Go home</a></p>
 			</div>
 		<?php else: ?>
 			<div class="vertical-center error">
