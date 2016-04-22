@@ -29,7 +29,7 @@ add_action( 'activated_plugin', 'html2wp_detect_plugin_activation' );
  * Holds the theme configurations, which are read from json
  * @var array
  */
-$html2wp_settings = json_decode( file_get_contents( get_template_directory() . '/html2wp/json/settings.json' ), true );
+$html2wp_settings = json_decode( file_get_contents( get_stylesheet_directory() . '/html2wp/json/settings.json' ), true );
 
 /**
  * Set up the theme on activation
