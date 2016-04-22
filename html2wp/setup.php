@@ -20,6 +20,7 @@ add_action( 'tgmpa_register', 'html2wp_register_required_plugins' );
 
 // Perform setup after this theme is activated
 add_action( 'after_switch_theme', 'html2wp_setup_theme_components' );
+add_action( 'after_switch_theme', 'html2wp_setup_menu_links' );
 
 // Perform theme setup after Gravity forms is installed
 add_action( 'activated_plugin', 'html2wp_detect_plugin_activation' );
@@ -184,6 +185,74 @@ function html2wp_setup_theme_components() {
 		delete_option( GRAVITY_PENDING_INSTALLATION );
 	}
 
+}
+
+/**
+ * If the theme has a menu (or more) and the menu locations
+ * were defined during conversion, then we try to automatically
+ * create the menu and add it to the corresponding location
+ */
+function html2wp_setup_menu_links() {
+
+
+	/**
+	 * Gets us the settings from global scope
+	 */
+	global $html2wp_settings;   
+
+	/**
+	 * Set up menus
+	 */
+	foreach ( $html2wp_settings['menu_links'] as $menu_location => $menu_links ) {
+    
+    	// get the pretty name of the menu
+    	$menu_name = "";
+    	foreach ( $html2wp_settings['menus'] as $menu ) {
+    		if ( key( $menu ) == $menu_location ) {
+    			$menu_name = $menu[key( $menu )];
+    			break;
+    		}
+    	}
+
+		// Does the menu exist already?
+		$menu_exists = wp_get_nav_menu_object( $menu_name );
+
+		// If it doesn't exist, let's create it.
+		if( !$menu_exists){
+		    $menu_id = wp_create_nav_menu( $menu_name );
+
+		    // setup the links and add them to the menu.
+		    foreach ( $menu_links as $link ) {
+
+		    	$slug = "";
+
+		    	// get the page slug for this menu link
+		    	foreach ( $html2wp_settings['pages'] as $page ) {
+		    		if ( $link['link'] === $page['file_name'] ) {
+		    			$slug = $page['slug'];
+		    			break;
+		    		}
+		    	}
+
+		    	// Update the menu item
+		    	if ( !empty( $slug ) ) {
+					wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link['text'],
+				                                           'menu-item-object' => 'page',
+				                                           'menu-item-object-id' => get_page_by_path($slug)->ID,
+				                                           'menu-item-type' => 'post_type',
+				                                           'menu-item-status' => 'publish'));		    	
+				}
+		    }
+
+		    // Grab the theme locations and assign our newly-created menu
+		    // to the menu location.
+		    if( !has_nav_menu( $menu_location ) ){
+		        $locations = get_theme_mod( 'nav_menu_locations' );
+		        $locations[$menu_location] = $menu_id;
+		        set_theme_mod( 'nav_menu_locations', $locations );
+		    }
+		}
+	}
 }
 
 /**
