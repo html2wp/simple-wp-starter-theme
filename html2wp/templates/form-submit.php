@@ -26,25 +26,35 @@
 			font-weight: 400;
 			color: #242C39;
 		}
+
 		.container {
 			text-align: center;
 			position: absolute;
 			display: table;        
 			text-align: center;
 		}
+
 		.vertical-center {
 			display: table-cell;
 			vertical-align: middle;         
 		}
+
+		h1 {
+			font-weight: 400;
+		}
+
 		.success h1 {
 			color: #1dd637;
 		}
+
 		.error h1 {
 			color: #ff0000;
 		}
+
 		p {
 			font-size: 18px;
 		}
+
 		a {
 			color: #242C39;
 			text-decoration: underline;
