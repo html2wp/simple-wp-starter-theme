@@ -64,7 +64,7 @@ function html2wp_extend_wp_nav_menu_args( $args ) {
 function html2wp_add_active_class_to_menu_item( $classes ) {
 
 	if ( in_array( 'current-menu-item', $classes ) ) {
-		$classes[] = 'active ';
+		$classes[] = 'active current ';
 	}
 
 	return $classes;
