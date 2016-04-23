@@ -248,7 +248,7 @@ function html2wp_setup_menu_links() {
 		    		if ( $isHash ) {
 
 						wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link['text'],
-															'menu-item-url' => $slug,
+															'menu-item-url' => site_url( '/' . $slug ),
 				                                        	'menu-item-status' => 'publish'));
 		    		} else {
 						
