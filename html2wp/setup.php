@@ -110,8 +110,8 @@ function html2wp_register_content() {
 	/**
 	 * Register menus
 	 */
-	foreach ( $html2wp_settings['menus'] as $menu ) {
-		register_nav_menus( $menu );
+	foreach ( $html2wp_settings['menus']['locations'] as $menu_location => $menu_name ) {
+		register_nav_menus( array( $menu_location => $menu_name ) );
 	}
 }
 
@@ -202,17 +202,14 @@ function html2wp_setup_menu_links() {
 
 	/**
 	 * Set up menus
+	 *
+	 * Go through all the menu links and create the menu at the corresponding
+	 * Menu location. If a location does not exist, let it go.
 	 */
-	foreach ( $html2wp_settings['menu_links'] as $menu_location => $menu_links ) {
+	foreach ( $html2wp_settings['menus']['links'] as $menu_location => $menu_links ) {
     
     	// get the pretty name of the menu
-    	$menu_name = "";
-    	foreach ( $html2wp_settings['menus'] as $menu ) {
-    		if ( key( $menu ) == $menu_location ) {
-    			$menu_name = $menu[key( $menu )];
-    			break;
-    		}
-    	}
+		$menu_name = $html2wp_settings['menus']['locations'][$menu_location];
 
 		// Does the menu exist already?
 		$menu_exists = wp_get_nav_menu_object( $menu_name );
