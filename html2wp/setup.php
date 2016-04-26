@@ -220,6 +220,10 @@ function html2wp_setup_menu_links() {
 
 		    // setup the links and add them to the menu.
 		    foreach ( $menu_links as $link ) {
+		    	
+		    	// $link has two indices
+		    	// index 0 = anchor
+		    	// index 1 = submenu, if it exists
 
 		    	$slug = "";
 
@@ -228,7 +232,7 @@ function html2wp_setup_menu_links() {
 
 		    	// get the page slug for this menu link
 		    	foreach ( $html2wp_settings['pages'] as $page ) {
-		    		if ( $link['link'] === $page['file_name'] ) {
+		    		if ( $link[0]['link'] === $page['file_name'] ) {
 		    			$slug = $page['slug'];
 		    			$isHash = false;
 		    			break;
@@ -237,28 +241,75 @@ function html2wp_setup_menu_links() {
 
 		    	if ( $isHash ) {
 		    		// this is a hash anchor, so set it accordingly
-		    		$slug = $link['link'];
+		    		$slug = $link[0]['link'];
 		    	}
 
 		    	// Update the menu item
 		    	if ( !empty( $slug ) ) {
 		    		if ( $isHash ) {
 
-						wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link['text'],
+						$main_menu = wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link['text'],
 															'menu-item-url' => site_url( '/' . $slug ),
 				                                        	'menu-item-status' => 'publish'));
 		    		} else {
 						
 						// this is an actual url with a page, so get the slug and set the
 						// menu-item-object-id to the slug id
-						wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link['text'],
+						$main_menu = wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link['text'],
 				                                        	'menu-item-object' => 'page',
 				                                        	'menu-item-object-id' => get_page_by_path($slug)->ID,
 				                                        	'menu-item-type' => 'post_type',
 				                                        	'menu-item-status' => 'publish'));
 					}
+					
+					// now add the sub menus, if any exist 
+					foreach( $link[1] as $sub_menu_link ) {
+						
+				    	$slug = "";
+				    	$isHash = true;
+		
+				    	// get the page slug for this menu link
+				    	foreach ( $html2wp_settings['pages'] as $page ) {
+				    		if ( $sub_menu_link['link'] === $page['file_name'] ) {
+				    			$slug = $page['slug'];
+				    			$isHash = false;
+				    			break;
+				    		}
+				    	}
+		
+				    	if ( $isHash ) {
+				    		$slug = $sub_menu_links['link'];
+				    	}
+		
+				    	// Update the sub menu item
+				    	if ( !empty( $slug ) ) {
+				    		if ( $isHash ) {
+		
+								wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link['text'],
+																	'menu-item-url' => site_url( '/' . $slug ),
+						                                        	'menu-item-status' => 'publish',
+						                                        	'menu-item-parent-id' => $main_menu
+						                                        	));
+				    		} else {
+								
+								// this is an actual url with a page, so get the slug and set the
+								// menu-item-object-id to the slug id
+								wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link['text'],
+						                                        	'menu-item-object' => 'page',
+						                                        	'menu-item-object-id' => get_page_by_path($slug)->ID,
+						                                        	'menu-item-type' => 'post_type',
+						                                        	'menu-item-status' => 'publish',
+						                                        	'menu-item-parent-id' => $main_menu
+						                                        	));
+							}
+							
+						}						
+						
+					}
+					// Sub menu addition ends
 				}
 		    }
+		    // menu addition ends
 
 		    // Grab the theme locations and assign our newly-created menu
 		    // to the menu location.
