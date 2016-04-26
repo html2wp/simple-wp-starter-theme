@@ -248,18 +248,20 @@ function html2wp_setup_menu_links() {
 		    	if ( !empty( $slug ) ) {
 		    		if ( $isHash ) {
 
-						$main_menu = wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link['text'],
+						$main_menu = wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link[0]['text'],
 															'menu-item-url' => site_url( '/' . $slug ),
-				                                        	'menu-item-status' => 'publish'));
+															'menu-item-status' => 'publish',
+															'menu-item-parent-id' => 0));
 		    		} else {
 						
 						// this is an actual url with a page, so get the slug and set the
 						// menu-item-object-id to the slug id
-						$main_menu = wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link['text'],
+						$main_menu = wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link[0]['text'],
 				                                        	'menu-item-object' => 'page',
 				                                        	'menu-item-object-id' => get_page_by_path($slug)->ID,
 				                                        	'menu-item-type' => 'post_type',
-				                                        	'menu-item-status' => 'publish'));
+															'menu-item-status' => 'publish',
+															'menu-item-parent-id' => 0));
 					}
 					
 					// now add the sub menus, if any exist 
@@ -278,14 +280,14 @@ function html2wp_setup_menu_links() {
 				    	}
 		
 				    	if ( $isHash ) {
-				    		$slug = $sub_menu_links['link'];
+							$slug = $sub_menu_link['link'];
 				    	}
 		
 				    	// Update the sub menu item
 				    	if ( !empty( $slug ) ) {
 				    		if ( $isHash ) {
 		
-								wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link['text'],
+								wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $sub_menu_link['text'],
 																	'menu-item-url' => site_url( '/' . $slug ),
 						                                        	'menu-item-status' => 'publish',
 						                                        	'menu-item-parent-id' => $main_menu
@@ -294,7 +296,7 @@ function html2wp_setup_menu_links() {
 								
 								// this is an actual url with a page, so get the slug and set the
 								// menu-item-object-id to the slug id
-								wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link['text'],
+								wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $sub_menu_link['text'],
 						                                        	'menu-item-object' => 'page',
 						                                        	'menu-item-object-id' => get_page_by_path($slug)->ID,
 						                                        	'menu-item-type' => 'post_type',
