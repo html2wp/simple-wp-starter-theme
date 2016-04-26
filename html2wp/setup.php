@@ -215,7 +215,7 @@ function html2wp_setup_menu_links() {
 		$menu_exists = wp_get_nav_menu_object( $menu_name );
 
 		// If it doesn't exist, let's create it.
-		if( !$menu_exists){
+		if( ! $menu_exists ){
 		    $menu_id = wp_create_nav_menu( $menu_name );
 
 		    // setup the links and add them to the menu.
@@ -248,20 +248,20 @@ function html2wp_setup_menu_links() {
 		    	if ( !empty( $slug ) ) {
 		    		if ( $isHash ) {
 
-						$main_menu = wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link[0]['text'],
+						$main_menu = wp_update_nav_menu_item( $menu_id, 0, array( 'menu-item-title' => $link[0]['text'],
 															'menu-item-url' => site_url( '/' . $slug ),
-															'menu-item-status' => 'publish',
-															'menu-item-parent-id' => 0));
+															'menu-item-status' => 'publish', 
+															'menu-item-parent-id' => 0 ) );
 		    		} else {
 						
 						// this is an actual url with a page, so get the slug and set the
 						// menu-item-object-id to the slug id
-						$main_menu = wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $link[0]['text'],
+						$main_menu = wp_update_nav_menu_item( $menu_id, 0, array( 'menu-item-title' => $link[0]['text'],
 				                                        	'menu-item-object' => 'page',
-				                                        	'menu-item-object-id' => get_page_by_path($slug)->ID,
+															'menu-item-object-id' => get_page_by_path( $slug )->ID,
 				                                        	'menu-item-type' => 'post_type',
-															'menu-item-status' => 'publish',
-															'menu-item-parent-id' => 0));
+															'menu-item-status' => 'publish', 
+															'menu-item-parent-id' => 0 ) );
 					}
 					
 					// now add the sub menus, if any exist 
@@ -287,22 +287,22 @@ function html2wp_setup_menu_links() {
 				    	if ( !empty( $slug ) ) {
 				    		if ( $isHash ) {
 		
-								wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $sub_menu_link['text'],
+								wp_update_nav_menu_item( $menu_id, 0, array( 'menu-item-title' => $sub_menu_link['text'],
 																	'menu-item-url' => site_url( '/' . $slug ),
 						                                        	'menu-item-status' => 'publish',
-						                                        	'menu-item-parent-id' => $main_menu
-						                                        	));
+																	'menu-item-parent-id' => $main_menu 
+																	) );
 				    		} else {
 								
 								// this is an actual url with a page, so get the slug and set the
 								// menu-item-object-id to the slug id
-								wp_update_nav_menu_item($menu_id, 0, array('menu-item-title' => $sub_menu_link['text'],
+								wp_update_nav_menu_item( $menu_id, 0, array( 'menu-item-title' => $sub_menu_link['text'],
 						                                        	'menu-item-object' => 'page',
-						                                        	'menu-item-object-id' => get_page_by_path($slug)->ID,
+																	'menu-item-object-id' => get_page_by_path( $slug )->ID,
 						                                        	'menu-item-type' => 'post_type',
 						                                        	'menu-item-status' => 'publish',
-						                                        	'menu-item-parent-id' => $main_menu
-						                                        	));
+																	'menu-item-parent-id' => $main_menu 
+																	) );
 							}
 							
 						}						
