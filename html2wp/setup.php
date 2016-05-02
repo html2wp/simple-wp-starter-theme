@@ -273,53 +273,57 @@ function html2wp_setup_menu_links() {
 						$main_menu = wp_update_nav_menu_item( $menu_id, 0, $menu_item );
 					}
 
-					// now add the sub menus, if any exist 
-					foreach ( $link[1] as $sub_menu_link ) {
+					// check if a submenu exists
+					if ( array_key_exists( 1, $link ) ) {
 
-						$slug = '';
-						$is_hash = true;
+						// now add the sub menus, if any exist 
+						foreach ( $link[1] as $sub_menu_link ) {
 
-						// get the page slug for this menu link
-						foreach ( $html2wp_settings['pages'] as $page ) {
-							if ( $sub_menu_link['link'] === $page['file_name'] ) {
-								$slug = $page['slug'];
-								$is_hash = false;
-								break;
+							$slug = '';
+							$is_hash = true;
+
+							// get the page slug for this menu link
+							foreach ( $html2wp_settings['pages'] as $page ) {
+								if ( $sub_menu_link['link'] === $page['file_name'] ) {
+									$slug = $page['slug'];
+									$is_hash = false;
+									break;
+								}
 							}
-						}
-
-						if ( $is_hash ) {
-							$slug = $sub_menu_link['link'];
-						}
-
-						// Update the sub menu item
-						if ( ! empty( $slug ) ) {
 
 							if ( $is_hash ) {
+								$slug = $sub_menu_link['link'];
+							}
 
-								$menu_item = array(
-									'menu-item-title'     => $sub_menu_link['text'],
-									'menu-item-url'       => site_url( '/' . $slug ),
-									'menu-item-status'    => 'publish',
-									'menu-item-parent-id' => $main_menu,
-								);
+							// Update the sub menu item
+							if ( ! empty( $slug ) ) {
 
-								wp_update_nav_menu_item( $menu_id, 0, $menu_item );
+								if ( $is_hash ) {
 
-							} else {
+									$menu_item = array(
+										'menu-item-title'     => $sub_menu_link['text'],
+										'menu-item-url'       => site_url( '/' . $slug ),
+										'menu-item-status'    => 'publish',
+										'menu-item-parent-id' => $main_menu,
+									);
 
-								$menu_item = array(
-									'menu-item-title'     => $sub_menu_link['text'],
-									'menu-item-object'    => 'page',
-									'menu-item-object-id' => get_page_by_path( $slug )->ID,
-									'menu-item-type'      => 'post_type',
-									'menu-item-status'    => 'publish',
-									'menu-item-parent-id' => $main_menu,
-								);
+									wp_update_nav_menu_item( $menu_id, 0, $menu_item );
 
-								// this is an actual url with a page, so get the slug and set the
-								// menu-item-object-id to the slug id
-								wp_update_nav_menu_item( $menu_id, 0, $menu_item );
+								} else {
+
+									$menu_item = array(
+										'menu-item-title'     => $sub_menu_link['text'],
+										'menu-item-object'    => 'page',
+										'menu-item-object-id' => get_page_by_path( $slug )->ID,
+										'menu-item-type'      => 'post_type',
+										'menu-item-status'    => 'publish',
+										'menu-item-parent-id' => $main_menu,
+									);
+
+									// this is an actual url with a page, so get the slug and set the
+									// menu-item-object-id to the slug id
+									wp_update_nav_menu_item( $menu_id, 0, $menu_item );
+								}
 							}
 						}
 					}
