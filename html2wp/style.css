@@ -13,12 +13,3 @@ Simple WordPress Starter Theme (https://github.com/html2wp/simple-wp-starter-the
 
 Ownership of any other files and their copyrights belong to their respective authors.
 */
-
-.widget-install-notice a {
-	display: block;
-    background: #0B95D0;
-    padding: 4px;
-    color: white;
-    text-decoration: none;
-    text-align: center;
-}
