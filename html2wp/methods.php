@@ -61,3 +61,18 @@ function html2wp_the_page_link( $template ) {
 	echo html2wp_get_page_link( $template );
 
 }
+
+/**
+ * Prints a notification message for the website admin to install a widget
+ * in a new registered sidebar
+ * @param  string $widget_name Name of the widget that has been registered
+ */
+function html2wp_notify_sidebar_install( $widget_name ) {
+    
+    $html  = '<div class="html2wp-widget-install-notice">';
+    $html .= '<p>' . $widget_name . ' widget is ready<p>';
+    $html .= '<a href="' . admin_url( 'widgets.php' ) . '">Click to install your widget</a>';
+    $html .= '</div>';
+    echo $html;
+
+}
