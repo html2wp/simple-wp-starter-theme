@@ -69,7 +69,7 @@ function html2wp_the_page_link( $template ) {
  */
 function html2wp_notify_sidebar_install( $widget_name ) {
     
-    $html  = '<div class="widget-install-notice">';
+    $html  = '<div class="html2wp-widget-install-notice">';
     $html .= '<p>' . $widget_name . ' widget is ready<p>';
     $html .= '<a href="' . admin_url( 'widgets.php' ) . '">Click to install your widget</a>';
     $html .= '</div>';
