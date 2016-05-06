@@ -32,6 +32,8 @@ add_action( 'plugins_loaded', 'html2wp_remove_default_widgets_remove_action' );
 // see https://developer.wordpress.org/reference/functions/wp_widgets_init/
 add_action( 'init', 'html2wp_remove_default_widgets_do_widgets_init', 1 );
 
+add_action( 'init', 'html2wp_rewrite_to_theme_folder' );
+
 /**
  * Holds the theme configurations, which are read from json
  * @var array
@@ -403,4 +405,13 @@ function html2wp_remove_default_widgets_do_widgets_init() {
  */
 function html2wp_remove_default_widgets_remove_action() { 
 	remove_action( 'init', 'wp_widgets_init', 1 ); 
+}
+
+function html2wp_rewrite_to_theme_folder() {
+	$theme_path = html2wp_replace_first_occurrence( get_template_directory(), get_home_path(), '' );
+	add_rewrite_rule( '(?!wp-.*|xmlrpc.php.*|index.php.*)(.*\..*)', $theme_path . '/$1', 'bottom' );
+}
+
+function html2wp_replace_first_occurrence( $haystack, $needle, $replace_with ) {
+    return implode( $replace_with, explode( $needle, $haystack, 2 ) );
 }
