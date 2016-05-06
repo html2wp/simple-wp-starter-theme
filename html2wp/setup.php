@@ -408,8 +408,26 @@ function html2wp_remove_default_widgets_remove_action() {
 }
 
 function html2wp_rewrite_to_theme_folder() {
-	$theme_path = html2wp_replace_first_occurrence( get_template_directory(), get_home_path(), '' );
-	add_rewrite_rule( '(?!wp-.*|xmlrpc.php.*|index.php.*)(.*\..*)', $theme_path . '/$1', 'bottom' );
+
+	// Get name of theme folder
+	$theme_name = get_template();
+
+	// If the name of the theme folder has changed update rewrite rule
+	if ( get_option( 'html2wp_theme_name' ) !== $theme_name ) {
+
+		// Get relative theme path
+		require_once( ABSPATH . 'wp-admin/includes/file.php' );
+		$theme_path = html2wp_replace_first_occurrence( get_template_directory(), get_home_path(), '' );
+
+		// Add the rewrite rule
+		add_rewrite_rule( '(?!wp-.*|xmlrpc.php.*|index.php.*)(.*\..*)', $theme_path . '/$1', 'bottom' );
+
+		// Update rewrite rules
+		flush_rewrite_rules( false );
+
+		// Update the theme name to database
+		update_option( 'html2wp_theme_name', $theme_name, true );
+	}
 }
 
 function html2wp_replace_first_occurrence( $haystack, $needle, $replace_with ) {
