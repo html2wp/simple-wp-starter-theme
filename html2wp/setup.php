@@ -431,11 +431,19 @@ function html2wp_set_posts_per_page() {
 	if ( isset( $html2wp_settings['posts_per_page'] ) && ! empty( $html2wp_settings['posts_per_page'] )
 			&& is_int( $html2wp_settings['posts_per_page'] ) && 0 !== $html2wp_settings['posts_per_page'] ) {
 
-		// Get the current WP posts_per_page option and save it for later use
-		update_option( 'html2wp_posts_per_page', get_option( 'posts_per_page' ) );
+		$posts_per_page = get_option( 'posts_per_page' );
 
-		// Update the WP posts_per_page option with the html2wp setting value
-		update_option( 'posts_per_page', $html2wp_settings['posts_per_page'] );
+		// Update only if the WP posts_per_page option is greater than the html2wp
+		// converted theme posts_per_page value: see http://stackoverflow.com/q/4600357/303802
+		if ( $posts_per_page > $html2wp_settings['posts_per_page'] ) {
+
+			// Get the current WP posts_per_page option and save it for later use
+			update_option( 'html2wp_posts_per_page', $posts_per_page );
+
+			// Update the WP posts_per_page option with the html2wp setting value
+			update_option( 'posts_per_page', $html2wp_settings['posts_per_page'] );
+		}
+
 	}
 }
 
@@ -446,5 +454,9 @@ function html2wp_set_posts_per_page() {
 function html2wp_reset_posts_per_page() {
 
 	// Update the WP posts_per_page option with the original value
-	update_option( 'posts_per_page', get_option( 'html2wp_posts_per_page' ) );
+	$html2wp_posts_per_page = get_option( 'html2wp_posts_per_page' );
+
+	if ( $html2wp_posts_per_page ) {
+		update_option( 'posts_per_page', $html2wp_posts_per_page );
+	}
 }
