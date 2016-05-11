@@ -49,7 +49,7 @@ function html2wp_setup_gravity_contact_form() {
 	 * Get the form data from form config json
 	 * in order to create a new GV Form
 	 */
-	global $html2wp_settings;
+	$html2wp_settings = html2wp_get_theme_settings();
 
 	if ( isset( $html2wp_settings['forms'] ) && ! empty( $html2wp_settings['forms'] ) ) {
 
