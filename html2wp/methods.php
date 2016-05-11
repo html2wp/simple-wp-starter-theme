@@ -76,3 +76,16 @@ function html2wp_notify_sidebar_install( $widget_name ) {
     echo $html;
 
 }
+
+/**
+ * Find the first occurence of a string and replace it
+ * Splits $haystack into an array of 2 items by $needle, and then joins the array with $replace_with
+ * @see http://stackoverflow.com/a/1252717/3073849
+ * @param  string $haystack     The subject of the replacing
+ * @param  string $needle       The string to look for
+ * @param  string $replace_with The replacement string
+ * @return string The modified string
+ */
+function html2wp_replace_first_occurrence( $haystack, $needle, $replace_with ) {
+    return implode( $replace_with, explode( $needle, $haystack, 2 ) );
+}
