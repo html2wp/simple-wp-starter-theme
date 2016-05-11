@@ -32,7 +32,10 @@ add_action( 'plugins_loaded', 'html2wp_remove_default_widgets_remove_action' );
 // see https://developer.wordpress.org/reference/functions/wp_widgets_init/
 add_action( 'init', 'html2wp_remove_default_widgets_do_widgets_init', 1 );
 
-add_action( 'init', 'html2wp_rewrite_to_theme_folder' );
+// If necessary create theme folder rewrite rule on theme activation (for wp cli)
+// and on admin_init if the theme folder name changes. The rewrite rules flush works only in the wp dashboard.
+add_action( 'after_switch_theme', 'html2wp_rewrite_to_theme_folder' );
+add_action( 'admin_init', 'html2wp_rewrite_to_theme_folder' );
 
 /**
  * Holds the theme configurations, which are read from json
@@ -49,6 +52,11 @@ function html2wp_theme_activation() {
 	 * Gets us the settings from global scope
 	 */
 	global $html2wp_settings;
+
+	// Check that we have the settings
+	if ( ! isset( $html2wp_settings['pages'] ) ) {
+		return false;
+	}
 
 	/**
 	 * Set up pages
@@ -111,15 +119,19 @@ function html2wp_register_content() {
 	/**
 	 * Register widgets
 	 */
-	foreach ( $html2wp_settings['widgets'] as $widget ) {
-		register_sidebar( $widget );
+	if ( isset( $html2wp_settings['widgets'] ) ) {
+		foreach ( $html2wp_settings['widgets'] as $widget ) {
+			register_sidebar( $widget );
+		}
 	}
 
 	/**
 	 * Register menus
 	 */
-	foreach ( $html2wp_settings['menus']['locations'] as $menu_location => $menu_name ) {
-		register_nav_menus( array( $menu_location => $menu_name ) );
+	if ( isset( $html2wp_settings['menus'] ) ) {
+		foreach ( $html2wp_settings['menus']['locations'] as $menu_location => $menu_name ) {
+			register_nav_menus( array( $menu_location => $menu_name ) );
+		}
 	}
 }
 
@@ -205,7 +217,12 @@ function html2wp_setup_menu_links() {
 	/**
 	 * Gets us the settings from global scope
 	 */
-	global $html2wp_settings;   
+	global $html2wp_settings;
+
+	// Check that we have the settings
+	if ( ! isset( $html2wp_settings['menus'] ) ) {
+		return false;
+	}
 
 	/**
 	 * Set up menus
@@ -407,6 +424,9 @@ function html2wp_remove_default_widgets_remove_action() {
 	remove_action( 'init', 'wp_widgets_init', 1 ); 
 }
 
+/**
+ * Create rewrite rule for retrieving hardcoded assets from the theme folder
+ */
 function html2wp_rewrite_to_theme_folder() {
 
 	// Get name of theme folder
@@ -415,21 +435,19 @@ function html2wp_rewrite_to_theme_folder() {
 	// If the name of the theme folder has changed update rewrite rule
 	if ( get_option( 'html2wp_theme_name' ) !== $theme_name ) {
 
-		// Get relative theme path
+		// We need the file.php to get the true home path
 		require_once( ABSPATH . 'wp-admin/includes/file.php' );
+
+		// Get relative theme path
 		$theme_path = html2wp_replace_first_occurrence( get_template_directory(), get_home_path(), '' );
 
 		// Add the rewrite rule
 		add_rewrite_rule( '(?!wp-.*|xmlrpc.php.*|index.php.*)(.*\..*)', $theme_path . '/$1', 'bottom' );
 
 		// Update rewrite rules
-		flush_rewrite_rules( false );
+		flush_rewrite_rules();
 
 		// Update the theme name to database
 		update_option( 'html2wp_theme_name', $theme_name, true );
 	}
-}
-
-function html2wp_replace_first_occurrence( $haystack, $needle, $replace_with ) {
-    return implode( $replace_with, explode( $needle, $haystack, 2 ) );
 }
