@@ -42,10 +42,12 @@ add_action( 'after_switch_theme', 'html2wp_add_rewrite_to_theme_folder' );
 add_action( 'admin_init', 'html2wp_update_rewrite_to_theme_folder' );
 
 /**
- * Holds the theme configurations, which are read from json
- * @var array
+ * Read the theme configurations from json
+ * @return array
  */
-$html2wp_settings = json_decode( file_get_contents( get_stylesheet_directory() . '/html2wp/json/settings.json' ), true );
+function html2wp_get_theme_settings() {
+	return json_decode( file_get_contents( get_stylesheet_directory() . '/html2wp/json/settings.json' ), true );
+}
 
 /**
  * Set up the theme on activation
@@ -53,14 +55,9 @@ $html2wp_settings = json_decode( file_get_contents( get_stylesheet_directory() .
 function html2wp_theme_activation() {
 
 	/**
-	 * Gets us the settings from global scope
+	 * Gets us the settings
 	 */
-	global $html2wp_settings;
-
-	// Check that we have the settings
-	if ( ! isset( $html2wp_settings['pages'] ) ) {
-		return false;
-	}
+	$html2wp_settings = html2wp_get_theme_settings();
 
 	/**
 	 * Set up pages
@@ -116,26 +113,22 @@ function html2wp_theme_activation() {
 function html2wp_register_content() {
 
 	/**
-	 * Gets us the settings from global scope
+	 * Gets us the settings
 	 */
-	global $html2wp_settings;
+	$html2wp_settings = html2wp_get_theme_settings();
 
 	/**
 	 * Register widgets
 	 */
-	if ( isset( $html2wp_settings['widgets'] ) ) {
-		foreach ( $html2wp_settings['widgets'] as $widget ) {
-			register_sidebar( $widget );
-		}
+	foreach ( $html2wp_settings['widgets'] as $widget ) {
+		register_sidebar( $widget );
 	}
 
 	/**
 	 * Register menus
 	 */
-	if ( isset( $html2wp_settings['menus'] ) ) {
-		foreach ( $html2wp_settings['menus']['locations'] as $menu_location => $menu_name ) {
-			register_nav_menus( array( $menu_location => $menu_name ) );
-		}
+	foreach ( $html2wp_settings['menus']['locations'] as $menu_location => $menu_name ) {
+		register_nav_menus( array( $menu_location => $menu_name ) );
 	}
 }
 
@@ -155,9 +148,9 @@ function html2wp_setup_theme_support() {
 function html2wp_register_required_plugins() {
 
 	/**
-	 * Gets us the settings from global scope
+	 * Gets us the settings
 	 */
-	global $html2wp_settings;	
+	$html2wp_settings = html2wp_get_theme_settings();	
 
 	$plugins = array(
 
@@ -219,14 +212,9 @@ function html2wp_setup_theme_components() {
 function html2wp_setup_menu_links() {
 
 	/**
-	 * Gets us the settings from global scope
+	 * Gets us the settings
 	 */
-	global $html2wp_settings;
-
-	// Check that we have the settings
-	if ( ! isset( $html2wp_settings['menus'] ) ) {
-		return false;
-	}
+	$html2wp_settings = html2wp_get_theme_settings();
 
 	/**
 	 * Set up menus
@@ -469,10 +457,11 @@ function html2wp_add_rewrite_to_theme_folder() {
  * html2wp settings global array
  */
 function html2wp_set_posts_per_page() {
+
 	/**
-	 * Gets us the settings from global scope
+	 * Gets us the settings
 	 */
-	global $html2wp_settings;  	
+	$html2wp_settings = html2wp_get_theme_settings(); 	
 
 	/**
 	 * Check if the posts_per_page setting is available
