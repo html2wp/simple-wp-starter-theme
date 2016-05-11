@@ -38,8 +38,8 @@ add_action( 'init', 'html2wp_remove_default_widgets_do_widgets_init', 1 );
 
 // If necessary create theme folder rewrite rule on theme activation (for wp cli)
 // and on admin_init if the theme folder name changes. The rewrite rules flush works only in the wp dashboard.
-add_action( 'after_switch_theme', 'html2wp_rewrite_to_theme_folder' );
-add_action( 'admin_init', 'html2wp_rewrite_to_theme_folder' );
+add_action( 'after_switch_theme', 'html2wp_add_rewrite_to_theme_folder' );
+add_action( 'admin_init', 'html2wp_update_rewrite_to_theme_folder' );
 
 /**
  * Holds the theme configurations, which are read from json
@@ -429,9 +429,9 @@ function html2wp_remove_default_widgets_remove_action() {
 }
 
 /**
- * Create rewrite rule for retrieving hardcoded assets from the theme folder
+ * Update rewrite rule for retrieving hardcoded assets from the theme folder
  */
-function html2wp_rewrite_to_theme_folder() {
+function html2wp_update_rewrite_to_theme_folder() {
 
 	// Get name of theme folder
 	$theme_name = get_template();
@@ -439,14 +439,7 @@ function html2wp_rewrite_to_theme_folder() {
 	// If the name of the theme folder has changed update rewrite rule
 	if ( get_option( 'html2wp_theme_name' ) !== $theme_name ) {
 
-		// We need the file.php to get the true home path
-		require_once( ABSPATH . 'wp-admin/includes/file.php' );
-
-		// Get relative theme path
-		$theme_path = html2wp_replace_first_occurrence( get_template_directory(), get_home_path(), '' );
-
-		// Add the rewrite rule
-		add_rewrite_rule( '(?!wp-.*|xmlrpc.php.*|index.php.*)(.*\..*)', $theme_path . '/$1', 'bottom' );
+		html2wp_add_rewrite_to_theme_folder();
 
 		// Update rewrite rules
 		flush_rewrite_rules();
@@ -454,6 +447,21 @@ function html2wp_rewrite_to_theme_folder() {
 		// Update the theme name to database
 		update_option( 'html2wp_theme_name', $theme_name, true );
 	}
+}
+
+/**
+ * Add rewrite rule for retrieving hardcoded assets from the theme folder
+ */
+function html2wp_add_rewrite_to_theme_folder() {
+
+	// We need the file.php to get the true home path
+	require_once( ABSPATH . 'wp-admin/includes/file.php' );
+
+	// Get relative theme path
+	$theme_path = html2wp_replace_first_occurrence( get_template_directory(), get_home_path(), '' );
+
+	// Add the rewrite rule
+	add_rewrite_rule( '(?!wp-.*|xmlrpc.php.*|index.php.*)(.*\..*)', $theme_path . '/$1', 'bottom' );
 }
 
 /**
