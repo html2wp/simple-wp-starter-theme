@@ -211,6 +211,10 @@ function html2wp_setup_theme_components() {
  */
 function html2wp_setup_menu_links() {
 
+	// The lazyloader needs to be included separately,
+	// or otherwise wp 4.5.2 won't find it when theme is activated with wp cli
+	require_once( ABSPATH . WPINC . '/class-wp-metadata-lazyloader.php' );
+
 	/**
 	 * Gets us the settings
 	 */
