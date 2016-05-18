@@ -22,6 +22,7 @@ add_action( 'tgmpa_register', 'html2wp_register_required_plugins' );
 add_action( 'after_switch_theme', 'html2wp_setup_theme_components' );
 add_action( 'after_switch_theme', 'html2wp_setup_menu_links' );
 add_action( 'after_switch_theme', 'html2wp_set_posts_per_page' );
+add_action( 'after_switch_theme', 'html2wp_setup_categories' );
 
 // Perform theme de-activation routines
 add_action( 'switch_theme', 'html2wp_reset_posts_per_page' );
@@ -506,5 +507,28 @@ function html2wp_reset_posts_per_page() {
 
 	if ( $html2wp_posts_per_page ) {
 		update_option( 'posts_per_page', $html2wp_posts_per_page );
+	}
+}
+
+/**
+ * Reads the global settings from html2wp and creates any new category if needed
+ */
+function html2wp_setup_categories() {
+	/**
+	 * Gets us the settings
+	 */
+	$html2wp_settings = html2wp_get_theme_settings(); 
+
+	if ( isset( $html2wp_settings['posts_category_name'] ) && ! empty( $html2wp_settings['posts_category_name'] ) ) {
+		
+		// get all the current categories from WP
+		$wp_categories = get_categories();
+		//print_r($wp_categories);
+
+		// Loop through all the category names in settings and create them if they do not
+		// exist already
+		foreach ( $html2wp_settings['posts_category_name'] as $cat_name ) {
+
+		}
 	}
 }
