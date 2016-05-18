@@ -30,7 +30,7 @@ add_action( 'switch_theme', 'html2wp_reset_posts_per_page' );
 add_action( 'activated_plugin', 'html2wp_detect_plugin_activation' );
 
 // Prevent the default WP widgets init routine
-add_action( 'plugins_loaded', 'html2wp_remove_default_widgets_remove_action' );
+add_action( 'after_setup_theme', 'html2wp_remove_default_widgets_remove_action' );
 
 // Since we prevented the default WP Widgets Init, need to perform regular Widgets Init
 // see https://developer.wordpress.org/reference/functions/wp_widgets_init/
