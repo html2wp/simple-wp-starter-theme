@@ -22,7 +22,7 @@ add_action( 'tgmpa_register', 'html2wp_register_required_plugins' );
 add_action( 'after_switch_theme', 'html2wp_setup_theme_components' );
 add_action( 'after_switch_theme', 'html2wp_setup_menu_links' );
 add_action( 'after_switch_theme', 'html2wp_set_posts_per_page' );
-add_action( 'after_switch_theme', 'html2wp_setup_categories' );
+add_action( 'after_switch_theme', 'html2wp_setup_custom_post_types_taxonomies' );
 
 // Perform theme de-activation routines
 add_action( 'switch_theme', 'html2wp_reset_posts_per_page' );
@@ -511,23 +511,48 @@ function html2wp_reset_posts_per_page() {
 }
 
 /**
- * Reads the global settings from html2wp and creates any new category if needed
+ * Reads the global settings from html2wp and creates any 
+ * new custom post types and / or categories if needed
  */
-function html2wp_setup_categories() {
+function html2wp_setup_custom_post_types_taxonomies() {
 	/**
 	 * Gets us the settings
 	 */
 	$html2wp_settings = html2wp_get_theme_settings(); 
 
-	if ( isset( $html2wp_settings['posts_category_name'] ) && ! empty( $html2wp_settings['posts_category_name'] ) ) {
-		
-		// get all the current categories from WP
-		$wp_categories = get_categories();
-		//print_r($wp_categories);
+	print_r($html2wp_settings);
 
-		// Loop through all the category names in settings and create them if they do not
+	if ( isset( $html2wp_settings['taxonomies'] ) && ! empty( $html2wp_settings['taxonomies'] ) ) {
+
+		// Loop through all the custom post type names in settings and create them if they do not
 		// exist already
-		foreach ( $html2wp_settings['posts_category_name'] as $cat_name ) {
+		foreach ( $html2wp_settings['taxonomies'] as $cpt => $taxonomies ) {
+
+			// create a new custom post type if it does not exist
+			if ( $cpt != 'post' ) {
+				register_post_type( $cpt,
+					array(
+						'labels' => array(
+							'name' => __( ucfirst($cpt) ),
+							'singular_name' => __( $cpt )
+						),
+						'taxonomies' => $taxonomies,
+						'public' => true,
+						'has_archive' => true,
+						'rewrite' => array('slug' => strtolower( $cpt )),
+					)
+				);
+			} else {
+				// create categories for the Post type
+				foreach ( $taxonomies as $tax ) {
+					wp_insert_category(
+						array(
+						  'cat_name' 				=> $tax,
+						  'taxonomy' 				=> 'category'
+						)
+					);
+				}
+			}
 
 		}
 	}
