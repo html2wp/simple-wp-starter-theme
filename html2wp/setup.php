@@ -523,6 +523,13 @@ function html2wp_setup_custom_post_types_taxonomies() {
 	print_r($html2wp_settings);
 
 	if ( isset( $html2wp_settings['taxonomies'] ) && ! empty( $html2wp_settings['taxonomies'] ) ) {
+		
+		// get all the current custom post typrs from WP
+		$wp_custom_post_types = get_post_types();
+		// get all the current categories from WP
+		$wp_categories = get_categories();		
+		print_r($wp_custom_post_types);
+		print_r($wp_categories);
 
 		// Loop through all the custom post type names in settings and create them if they do not
 		// exist already
@@ -545,12 +552,7 @@ function html2wp_setup_custom_post_types_taxonomies() {
 			} else {
 				// create categories for the Post type
 				foreach ( $taxonomies as $tax ) {
-					wp_insert_category(
-						array(
-						  'cat_name' 				=> $tax,
-						  'taxonomy' 				=> 'category'
-						)
-					);
+					wp_create_category( $tax );
 				}
 			}
 
