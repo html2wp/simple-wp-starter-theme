@@ -22,7 +22,6 @@ add_action( 'tgmpa_register', 'html2wp_register_required_plugins' );
 add_action( 'after_switch_theme', 'html2wp_setup_theme_components' );
 add_action( 'after_switch_theme', 'html2wp_setup_menu_links' );
 add_action( 'after_switch_theme', 'html2wp_set_posts_per_page' );
-add_action( 'after_switch_theme', 'html2wp_setup_custom_post_types_taxonomies' );
 
 // Perform theme de-activation routines
 add_action( 'switch_theme', 'html2wp_reset_posts_per_page' );
@@ -36,6 +35,8 @@ add_action( 'plugins_loaded', 'html2wp_remove_default_widgets_remove_action' );
 // Since we prevented the default WP Widgets Init, need to perform regular Widgets Init
 // see https://developer.wordpress.org/reference/functions/wp_widgets_init/
 add_action( 'init', 'html2wp_remove_default_widgets_do_widgets_init', 1 );
+// Start creating the custom post types and taxonomies
+add_action( 'init', 'html2wp_setup_custom_post_types_taxonomies' );
 
 // If necessary create theme folder rewrite rule on theme activation (for wp cli)
 // and on admin_init if the theme folder name changes. The rewrite rules flush works only in the wp dashboard.
@@ -520,16 +521,7 @@ function html2wp_setup_custom_post_types_taxonomies() {
 	 */
 	$html2wp_settings = html2wp_get_theme_settings(); 
 
-	print_r($html2wp_settings);
-
 	if ( isset( $html2wp_settings['taxonomies'] ) && ! empty( $html2wp_settings['taxonomies'] ) ) {
-		
-		// get all the current custom post typrs from WP
-		$wp_custom_post_types = get_post_types();
-		// get all the current categories from WP
-		$wp_categories = get_categories();		
-		print_r($wp_custom_post_types);
-		print_r($wp_categories);
 
 		// Loop through all the custom post type names in settings and create them if they do not
 		// exist already
@@ -543,7 +535,12 @@ function html2wp_setup_custom_post_types_taxonomies() {
 							'name' => __( ucfirst($cpt) ),
 							'singular_name' => __( $cpt )
 						),
-						'taxonomies' => $taxonomies,
+						'supports' => array( 'title', 'editor', 'excerpt', 'author', 'thumbnail', 'comments', 'revisions', 'custom-fields'),
+						'show_ui' => true,
+						'show_in_menu' => true,
+						'show_in_nav_menus' => true,
+						'show_in_admin_bar' => true,
+						'taxonomies' => array( 'category' ),
 						'public' => true,
 						'has_archive' => true,
 						'rewrite' => array('slug' => strtolower( $cpt )),
@@ -552,7 +549,9 @@ function html2wp_setup_custom_post_types_taxonomies() {
 			} else {
 				// create categories for the Post type
 				foreach ( $taxonomies as $tax ) {
-					wp_create_category( $tax );
+					if ( !is_term( $tax, 'category' ) ) {
+						wp_insert_term( $tax, 'category' );
+					}
 				}
 			}
 
