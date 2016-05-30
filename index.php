@@ -6,4 +6,4 @@
  * Your front-page can be found from front-page.php
  */
 ?>
-No default template has been added for this theme. <a href="https://html-to-wordpress.readme.io/docs/default-template" target="_blank">Click here</a> to find out how to create a default template for the conversion.
+No default template has been added for this theme. <a href="https://html-to-wordpress.readme.io/docs/templates#section-default-template" target="_blank">Click here</a> to find out how to create a default template for the conversion.

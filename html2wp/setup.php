@@ -30,7 +30,7 @@ add_action( 'switch_theme', 'html2wp_reset_posts_per_page' );
 add_action( 'activated_plugin', 'html2wp_detect_plugin_activation' );
 
 // Prevent the default WP widgets init routine
-add_action( 'plugins_loaded', 'html2wp_remove_default_widgets_remove_action' );
+add_action( 'after_setup_theme', 'html2wp_remove_default_widgets_remove_action' );
 
 // Since we prevented the default WP Widgets Init, need to perform regular Widgets Init
 // see https://developer.wordpress.org/reference/functions/wp_widgets_init/
@@ -215,7 +215,10 @@ function html2wp_setup_menu_links() {
 
 	// The lazyloader needs to be included separately,
 	// or otherwise wp 4.5.2 won't find it when theme is activated with wp cli
-	require_once( ABSPATH . WPINC . '/class-wp-metadata-lazyloader.php' );
+	$lazyloader_path = ABSPATH . WPINC . '/class-wp-metadata-lazyloader.php';
+	if ( file_exists( $lazyloader_path ) ) {
+		require_once( $lazyloader_path );
+	}
 
 	/**
 	 * Gets us the settings
@@ -274,6 +277,7 @@ function html2wp_setup_menu_links() {
 						$menu_item = array(
 							'menu-item-title'     => $link[0]['text'],
 							'menu-item-url'       => site_url( '/' . $slug ),
+							'menu-item-classes'	  => $link[0]['classes'],
 							'menu-item-status'    => 'publish', 
 							'menu-item-parent-id' => 0,
 						);
@@ -287,6 +291,7 @@ function html2wp_setup_menu_links() {
 							'menu-item-object'    => 'page',
 							'menu-item-object-id' => get_page_by_path( $slug )->ID,
 							'menu-item-type'      => 'post_type',
+							'menu-item-classes'	  => $link[0]['classes'],
 							'menu-item-status'    => 'publish', 
 							'menu-item-parent-id' => 0,
 						);
@@ -326,6 +331,7 @@ function html2wp_setup_menu_links() {
 									$menu_item = array(
 										'menu-item-title'     => $sub_menu_link['text'],
 										'menu-item-url'       => site_url( '/' . $slug ),
+										'menu-item-classes'	  => $sub_menu_link['classes'],
 										'menu-item-status'    => 'publish',
 										'menu-item-parent-id' => $main_menu,
 									);
@@ -339,6 +345,7 @@ function html2wp_setup_menu_links() {
 										'menu-item-object'    => 'page',
 										'menu-item-object-id' => get_page_by_path( $slug )->ID,
 										'menu-item-type'      => 'post_type',
+										'menu-item-classes'	  => $sub_menu_link['classes'],
 										'menu-item-status'    => 'publish',
 										'menu-item-parent-id' => $main_menu,
 									);
