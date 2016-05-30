@@ -275,7 +275,6 @@ function html2wp_setup_menu_links() {
 						$menu_item = array(
 							'menu-item-title'     => $link[0]['text'],
 							'menu-item-url'       => site_url( '/' . $slug ),
-							'menu-item-classes'	  => $link[0]['classes'],
 							'menu-item-status'    => 'publish', 
 							'menu-item-parent-id' => 0,
 						);
@@ -289,7 +288,6 @@ function html2wp_setup_menu_links() {
 							'menu-item-object'    => 'page',
 							'menu-item-object-id' => get_page_by_path( $slug )->ID,
 							'menu-item-type'      => 'post_type',
-							'menu-item-classes'	  => $link[0]['classes'],
 							'menu-item-status'    => 'publish', 
 							'menu-item-parent-id' => 0,
 						);
@@ -329,7 +327,6 @@ function html2wp_setup_menu_links() {
 									$menu_item = array(
 										'menu-item-title'     => $sub_menu_link['text'],
 										'menu-item-url'       => site_url( '/' . $slug ),
-										'menu-item-classes'	  => $sub_menu_link['classes'],
 										'menu-item-status'    => 'publish',
 										'menu-item-parent-id' => $main_menu,
 									);
@@ -343,7 +340,6 @@ function html2wp_setup_menu_links() {
 										'menu-item-object'    => 'page',
 										'menu-item-object-id' => get_page_by_path( $slug )->ID,
 										'menu-item-type'      => 'post_type',
-										'menu-item-classes'	  => $sub_menu_link['classes'],
 										'menu-item-status'    => 'publish',
 										'menu-item-parent-id' => $main_menu,
 									);
