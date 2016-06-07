@@ -44,12 +44,45 @@ add_action( 'init', 'html2wp_setup_custom_post_types_taxonomies' );
 add_action( 'after_switch_theme', 'html2wp_add_rewrite_to_theme_folder' );
 add_action( 'admin_init', 'html2wp_update_rewrite_to_theme_folder' );
 
+// Enqueue jQuery based on theme settings
+if ( !is_admin() ) { 
+	add_action( 'wp_enqueue_scripts', 'html2wp_enqueue_jquery', 11 );
+}
+
 /**
  * Read the theme configurations from json
  * @return array
  */
 function html2wp_get_theme_settings() {
 	return json_decode( file_get_contents( get_stylesheet_directory() . '/html2wp/json/settings.json' ), true );
+}
+
+/**
+ * Enqueue jQuery from Google's CDN after reading for the presence of jQuery flag in settings
+ */
+function html2wp_enqueue_jquery() {
+
+	/**
+	 * Get the settings
+	 */	
+	$html2wp_settings = html2wp_get_theme_settings();
+
+	/**
+	 * if jquery exists in theme setting
+	 */
+	if ( $html2wp_settings['jquery'] === 'yes' ) {
+
+		/**
+		 * Remove WordPress's jQuery
+		 */
+		wp_deregister_script( 'jquery' );
+
+		/**
+		 * Register jQuery from Google CDN
+		 */
+		wp_register_script( 'jquery', 'http' . ( $_SERVER['SERVER_PORT'] == 443 ? 's' : '' ) . '://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js', false, null );
+		wp_enqueue_script( 'jquery' );
+	}
 }
 
 /**
