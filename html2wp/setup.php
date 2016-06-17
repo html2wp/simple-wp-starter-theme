@@ -10,6 +10,9 @@
 // This hook is triggered on the request immediately following a theme switch.
 add_filter('after_switch_theme', 'html2wp_theme_activation');
 
+// Create images as WordPress attachments when the theme is activated
+add_filter('after_switch_theme', 'html2wp_create_image_attachments');
+
 // This hook is called during each page load, after the theme is initialized.
 // It is generally used to perform basic setup, registration, and init actions for a theme.
 add_action( 'after_setup_theme', 'html2wp_register_content' );
@@ -516,7 +519,75 @@ function html2wp_reset_posts_per_page() {
 }
 
 /**
- * Reads the global settings from html2wp and creates any
+ * Adds images from the website conversion to the WP theme
+ * image attachments gallery
+ */
+function html2wp_create_image_attachments() {
+	
+	$html2wp_settings = html2wp_get_theme_settings();
+
+	if ( !empty( $html2wp_settings['attachments'] ) ) {
+
+		// go through all the attachments and create the media attachments in wordpress
+		foreach ( $html2wp_settings['attachments'] as $file ) {
+
+		    // Get the path to the upload directory.
+		    $wp_upload_dir = wp_upload_dir();
+
+		    // If wp_upload_dir succeeds 
+		    if ( !$wp_upload_dir['error'] ) {
+
+			    // $new_file should be the path to a file in the upload directory.
+			    $new_file = trailingslashit( $wp_upload_dir['path'] ) . basename( $file );
+
+			    // Check that the file exists
+			    if ( file_exists( $file ) ) {
+
+					// Move the file to uploaddir
+				    if ( copy( $file, $new_file ) ) {
+
+					    // Check the type of file. We'll use this as the 'post_mime_type'.
+					    $filetype = wp_check_filetype( basename( $new_file ), null );
+
+					    // Prepare an array of post data for the attachment.
+					    $attachment_data = array(
+					        'guid'           => trailingslashit( $wp_upload_dir['url'] ) . basename( $new_file ), 
+					        'post_mime_type' => $filetype['type'],
+					        'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $new_file ) ),
+					        'post_content'   => '',
+					        'post_status'    => 'inherit'
+					    );
+
+					    // Insert the attachment without any parent
+					    $attach_id = wp_insert_attachment( $attachment_data, $new_file, 0 );
+
+					   	// If wp_insert_attachment was successful
+					    if ( $attach_id ) {
+
+						    // Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
+						    require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
+						    // Generate the metadata for the attachment
+						    $attach_data = wp_generate_attachment_metadata( $attach_id, $new_file );
+
+						    // Update the database record
+						    wp_update_attachment_metadata( $attach_id, $attach_data );
+						}
+
+				    }
+
+			    }
+
+		    }
+
+		}
+
+	}
+
+}
+
+/**
+ * Reads the global settings from html2wp and creates any 
  * new custom post types and / or categories if needed
  */
 function html2wp_setup_custom_post_types_taxonomies() {
