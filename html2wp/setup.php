@@ -153,7 +153,7 @@ function html2wp_register_required_plugins() {
 	/**
 	 * Gets us the settings
 	 */
-	$html2wp_settings = html2wp_get_theme_settings();	
+	$html2wp_settings = html2wp_get_theme_settings();
 
 	$plugins = array(
 
@@ -175,7 +175,7 @@ function html2wp_register_required_plugins() {
 			'required'         => true,
 			'force_activation' => true,
 		);
-	}	
+	}
 
 	tgmpa( $plugins );
 }
@@ -190,7 +190,7 @@ function html2wp_setup_theme_components() {
 	 * Disable the gravity forms installation wizard
 	 * as it conflicts with auto setupof forms
 	 */
-	update_option( GRAVITY_PENDING_INSTALLATION, -1 );     
+	update_option( GRAVITY_PENDING_INSTALLATION, -1 );
 
 	//check if the Gravity forms plugin is active
 	if ( class_exists( 'GFForms' ) ) {
@@ -278,7 +278,7 @@ function html2wp_setup_menu_links() {
 						$menu_item = array(
 							'menu-item-title'     => $link[0]['text'],
 							'menu-item-url'       => site_url( '/' . $slug ),
-							'menu-item-status'    => 'publish', 
+							'menu-item-status'    => 'publish',
 							'menu-item-parent-id' => 0,
 						);
 
@@ -291,7 +291,7 @@ function html2wp_setup_menu_links() {
 							'menu-item-object'    => 'page',
 							'menu-item-object-id' => get_page_by_path( $slug )->ID,
 							'menu-item-type'      => 'post_type',
-							'menu-item-status'    => 'publish', 
+							'menu-item-status'    => 'publish',
 							'menu-item-parent-id' => 0,
 						);
 
@@ -303,7 +303,7 @@ function html2wp_setup_menu_links() {
 					// check if a submenu exists
 					if ( array_key_exists( 1, $link ) ) {
 
-						// now add the sub menus, if any exist 
+						// now add the sub menus, if any exist
 						foreach ( $link[1] as $sub_menu_link ) {
 
 							$slug = '';
@@ -396,7 +396,7 @@ function html2wp_detect_plugin_activation( $plugin ) {
 		 * Disable the gravity forms installation wizard
 		 * as it conflicts with auto setupof forms
 		 */
-		update_option( GRAVITY_PENDING_INSTALLATION, -1 );  
+		update_option( GRAVITY_PENDING_INSTALLATION, -1 );
 
 		/**
 		 * check if a GF contact form has already been created
@@ -407,7 +407,7 @@ function html2wp_detect_plugin_activation( $plugin ) {
 		 */
 		if ( get_option( HTML2WP_FORM_CREATED, -1 ) === -1 ) {
 			html2wp_setup_gravity_contact_form();
-			delete_option( GRAVITY_PENDING_INSTALLATION );  
+			delete_option( GRAVITY_PENDING_INSTALLATION );
 		}
 	}
 }
@@ -415,15 +415,15 @@ function html2wp_detect_plugin_activation( $plugin ) {
 /**
  * Peforms the widgets_init action
  */
-function html2wp_remove_default_widgets_do_widgets_init() { 
-	do_action( 'widgets_init' ); 
+function html2wp_remove_default_widgets_do_widgets_init() {
+	do_action( 'widgets_init' );
 }
 
 /**
  * Removes the wp_widgets_init action
  */
-function html2wp_remove_default_widgets_remove_action() { 
-	remove_action( 'init', 'wp_widgets_init', 1 ); 
+function html2wp_remove_default_widgets_remove_action() {
+	remove_action( 'init', 'wp_widgets_init', 1 );
 }
 
 /**
@@ -471,7 +471,7 @@ function html2wp_set_posts_per_page() {
 	/**
 	 * Gets us the settings
 	 */
-	$html2wp_settings = html2wp_get_theme_settings(); 	
+	$html2wp_settings = html2wp_get_theme_settings();
 
 	/**
 	 * Check if the posts_per_page setting is available
@@ -483,7 +483,7 @@ function html2wp_set_posts_per_page() {
 
 	// the check for 0 exists because of the default value of the global setting array for the same key
 	if ( isset( $html2wp_settings['posts_per_page'] ) && ! empty( $html2wp_settings['posts_per_page'] )
-			&& is_int( $html2wp_settings['posts_per_page'] ) && 0 !== $html2wp_settings['posts_per_page'] ) {
+			&& is_int( $html2wp_settings['posts_per_page'] ) && ( $html2wp_settings['posts_per_page'] >= 0 ) ) {
 
 		$posts_per_page = get_option( 'posts_per_page' );
 
@@ -516,7 +516,7 @@ function html2wp_reset_posts_per_page() {
 }
 
 /**
- * Reads the global settings from html2wp and creates any 
+ * Reads the global settings from html2wp and creates any
  * new custom post types and / or categories if needed
  */
 function html2wp_setup_custom_post_types_taxonomies() {
@@ -524,7 +524,7 @@ function html2wp_setup_custom_post_types_taxonomies() {
 	/**
 	 * Gets us the settings
 	 */
-	$html2wp_settings = html2wp_get_theme_settings(); 
+	$html2wp_settings = html2wp_get_theme_settings();
 
 	if ( isset( $html2wp_settings['taxonomies'] ) && ! empty( $html2wp_settings['taxonomies'] ) ) {
 
