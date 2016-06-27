@@ -18,7 +18,7 @@ function html2wp_get_page_link( $template ) {
 	 * The pages matching the template if any exist
 	 * @var array
 	 */
-	$pages = get_pages( array( 'meta_key' => '_wp_page_template', 'meta_value' => $template ) );
+	$pages = get_posts( array( 'post_type' => 'page', 'meta_key' => '_wp_page_template', 'meta_value' => $template ) );
 
 	/**
 	 * If a page exists and is not in the trash, echo the link
@@ -68,7 +68,7 @@ function html2wp_the_page_link( $template ) {
  * @param  string $widget_name Name of the widget that has been registered
  */
 function html2wp_notify_sidebar_install( $widget_name ) {
-    
+
     $html  = '<div class="html2wp-widget-install-notice">';
     $html .= '<p>' . $widget_name . ' widget is ready<p>';
     $html .= '<a href="' . admin_url( 'widgets.php' ) . '">Click to install your widget</a>';
