@@ -18,7 +18,7 @@ function html2wp_get_page_link( $template ) {
 	 * The pages matching the template if any exist
 	 * @var array
 	 */
-	$pages = get_posts( array( 'post_type' => 'page', 'meta_key' => '_wp_page_template', 'meta_value' => $template ) );
+	$pages = get_pages( array( 'meta_key' => '_wp_page_template', 'meta_value' => $template ) );
 
 	/**
 	 * If a page exists and is not in the trash, echo the link
