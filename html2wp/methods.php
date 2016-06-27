@@ -64,6 +64,9 @@ function html2wp_get_page_link( $template ) {
 
 				return site_url( $custom_post_type_name );
 			}
+
+			// set the default return to the home page url
+			return site_url();
 		}
 	}
 }
