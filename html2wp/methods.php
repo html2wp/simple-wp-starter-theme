@@ -48,6 +48,25 @@ function html2wp_get_page_link( $template ) {
 			}
 
 			return html2wp_get_page_link( $dir . $file_name . '.php' );
+		} else {
+
+			// if there exists a custom post type of the name $file_name
+
+			/**
+			 * Get the settings
+			 */
+			$html2wp_settings = html2wp_get_theme_settings();
+
+			$custom_post_type_name = str_replace("archive_", "", $file_name);
+
+			// check if we have a custom post type by this name
+			if ( in_array($custom_post_type_name, array_keys( $html2wp_settings['taxonomies'] ) ) ) {
+
+				return site_url( $custom_post_type_name );
+			}
+
+			// set the default return to the home page url
+			return site_url();
 		}
 	}
 }

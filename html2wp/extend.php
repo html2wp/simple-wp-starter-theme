@@ -50,7 +50,7 @@ function html2wp_extend_wp_nav_menu_args( $args ) {
 	// Don't wrap with ul
 	$args['items_wrap'] = '%3$s';
 
-	// Create the links 
+	// Create the links
 	$args['walker'] = new Html2wp_walker_nav_menu;
 
 	return $args;
