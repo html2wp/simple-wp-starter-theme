@@ -73,11 +73,49 @@ function html2wp_theme_activation() {
 		 */
 		$pages = get_pages( array( 'meta_key' => '_wp_page_template', 'meta_value' => $page_data['template'] ) );
 
+
+		/**
+		 * Parse the content for the page from the html template
+		 */
+		$template = get_stylesheet_directory() . '/'. $page_data['template'];
+		$content = "";
+
+		if ( file_exists( $template ) ) {
+
+			require_once get_stylesheet_directory() . '/html2wp/phpQuery.php';
+			$result = phpQuery::newDocumentFilePHP($template);
+
+			/**
+			 * Loop through all the matching instances of .wp-content
+			 * and append it to the content
+			 */
+			foreach ( $result->find('.wp-content') as $el ) {
+				$content .= pq($el)->htmlOuter();
+			}
+
+		}
+
 		/**
 		 * Get the page id if a page exists and is not in the trash
 		 */
 		if ( ! empty( $pages ) && isset( $pages[0] ) && 'trash' !== $pages[0]->post_status ) {
 			$page_id = $pages[0]->ID;
+
+			/**
+			 * If this is an existing page, update its content
+			 * only if it is empty
+			 */
+			if ( empty( $pages[0]->post_content ) ) {
+
+				// Update the content of the page
+				$page = array(
+				  'ID'           => $page_id,
+				  'post_content' => $content
+				);
+
+				// Update the post into the database
+				wp_update_post( $page );
+			}
 		}
 
 		/**
@@ -93,6 +131,12 @@ function html2wp_theme_activation() {
 				'post_type'     => 'page',
 				'post_status'   => 'publish',
 			);
+
+			// If the parsed content is not empty,
+			// Try to populate the page's content as well
+			if ( !empty( $content ) ) {
+				$new_page['post_content'] = $content;
+			}
 
 			// Insert the post into the database
 			$page_id = wp_insert_post( $new_page );
