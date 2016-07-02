@@ -556,7 +556,13 @@ function html2wp_setup_custom_post_types_taxonomies() {
 				);
 
 				// Register the taxonomies
-				register_taxonomy( $post_type . '_categories', $post_type, array ( 'label' => ucfirst( $post_type ) . ' Categories', 'hierarchical' => true ) );
+				register_taxonomy( $post_type . '_categories',
+					$post_type,
+					array (
+						'label' => ucfirst( $post_type ) . ' Categories',
+						'hierarchical' => true // This makes the terms for this custom post type categories appear as a checkbox
+					)
+				);
 				register_taxonomy_for_object_type ( $post_type . '_categories', $post_type );
 
 				// Insert the terms in the DB if they do not already exist
