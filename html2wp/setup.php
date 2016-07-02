@@ -559,6 +559,26 @@ function html2wp_setup_custom_post_types_taxonomies() {
 				register_taxonomy( $post_type . '_categories', $post_type, array ( 'label' => ucfirst( $post_type ) . ' Categories', 'hierarchical' => true ) );
 				register_taxonomy_for_object_type ( $post_type . '_categories', $post_type );
 
+				// Insert the terms in the DB if they do not already exist
+				// $taxonomies actually contains the terms
+				foreach ( $taxonomies as $term ) {
+
+					// if the term does not exist already for this taxonomy,
+					// then insert it into the db
+					if ( !term_exists( $term, $post_type . '_categories' )
+						&& strtolower( $term ) != 'uncategorized' ) {
+
+						wp_insert_term(
+						    $term,   // the term
+						    $post_type . '_categories',
+						    array (
+						    	'slug' => $term
+						    )
+						);
+					}
+
+				}
+
 			} else {
 				// create categories for the Post type
 				foreach ( $taxonomies as $tax ) {
