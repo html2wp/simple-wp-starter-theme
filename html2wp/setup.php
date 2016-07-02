@@ -554,6 +554,11 @@ function html2wp_setup_custom_post_types_taxonomies() {
 						),
 					)
 				);
+
+				// Register the taxonomies
+				register_taxonomy( $post_type . '_categories', $post_type, array ( 'label' => ucfirst( $post_type ) . ' Categories', 'hierarchical' => true ) );
+				register_taxonomy_for_object_type ( $post_type . '_categories', $post_type );
+
 			} else {
 				// create categories for the Post type
 				foreach ( $taxonomies as $tax ) {
