@@ -576,7 +576,7 @@ function html2wp_setup_custom_post_types_taxonomies() {
 
 						wp_insert_term(
 						    $term,   // the term
-						    $post_type . '_categories',
+						    $post_type . '_categories', // the category for custom post type
 						    array (
 						    	'slug' => $term
 						    )
@@ -586,10 +586,17 @@ function html2wp_setup_custom_post_types_taxonomies() {
 				}
 
 			} else {
+
 				// create categories for the Post type
-				foreach ( $taxonomies as $tax ) {
-					if ( ! is_term( $tax, 'category' ) ) {
-						wp_insert_term( $tax, 'category' );
+				foreach ( $taxonomies as $term ) {
+
+					// if the term already does not exist in the database
+					if ( !term_exists( $term, 'category' ) ) {
+
+						wp_insert_term(
+							$term,
+							'category'
+						);
 					}
 				}
 			}
