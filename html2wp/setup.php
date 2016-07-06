@@ -531,61 +531,55 @@ function html2wp_create_image_attachments() {
 		// go through all the attachments and create the media attachments in wordpress
 		foreach ( $html2wp_settings['attachments'] as $file ) {
 
-		    // Get the path to the upload directory.
-		    $wp_upload_dir = wp_upload_dir();
+			// Get the path to the upload directory.
+			$wp_upload_dir = wp_upload_dir();
 
-		    // If wp_upload_dir succeeds
-		    if ( !$wp_upload_dir['error'] ) {
+			// If wp_upload_dir succeeds
+			if ( ! $wp_upload_dir['error'] ) {
 
-			    // $new_file should be the path to a file in the upload directory.
-			    $new_file = trailingslashit( $wp_upload_dir['path'] ) . basename( $file );
+				// $new_file should be the path to a file in the upload directory.
+				$new_file = trailingslashit( $wp_upload_dir['path'] ) . basename( $file );
 
-			    $file = get_template_directory() . "/" . $file;
+				$file = get_template_directory() . '/' . $file;
 
-			    // Check that the file exists
-			    if ( file_exists( $file ) ) {
+				// Check that the file exists
+				if ( file_exists( $file ) ) {
 
 					// Move the file to uploaddir
-				    if ( copy( $file, $new_file ) ) {
+					if ( copy( $file, $new_file ) ) {
 
-					    // Check the type of file. We'll use this as the 'post_mime_type'.
-					    $filetype = wp_check_filetype( basename( $new_file ), null );
+						// Check the type of file. We'll use this as the 'post_mime_type'.
+						$filetype = wp_check_filetype( basename( $new_file ), null );
 
-					    // Prepare an array of post data for the attachment.
-					    $attachment_data = array(
-					        'guid'           => trailingslashit( $wp_upload_dir['url'] ) . basename( $new_file ),
-					        'post_mime_type' => $filetype['type'],
-					        'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $new_file ) ),
-					        'post_content'   => '',
-					        'post_status'    => 'inherit'
-					    );
+						// Prepare an array of post data for the attachment.
+						$attachment_data = array(
+							'guid'           => trailingslashit( $wp_upload_dir['url'] ) . basename( $new_file ),
+							'post_mime_type' => $filetype['type'],
+							'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $new_file ) ),
+							'post_content'   => '',
+							'post_status'    => 'inherit'
+						);
 
-					    // Insert the attachment without any parent
-					    $attach_id = wp_insert_attachment( $attachment_data, $new_file, 0 );
+						// Insert the attachment without any parent
+						$attach_id = wp_insert_attachment( $attachment_data, $new_file, 0 );
 
-					   	// If wp_insert_attachment was successful
-					    if ( $attach_id ) {
+						// If wp_insert_attachment was successful
+						if ( $attach_id ) {
 
-						    // Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
-						    require_once( ABSPATH . 'wp-admin/includes/image.php' );
+							// Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
+							require_once( ABSPATH . 'wp-admin/includes/image.php' );
 
-						    // Generate the metadata for the attachment
-						    $attach_data = wp_generate_attachment_metadata( $attach_id, $new_file );
+							// Generate the metadata for the attachment
+							$attach_data = wp_generate_attachment_metadata( $attach_id, $new_file );
 
-						    // Update the database record
-						    wp_update_attachment_metadata( $attach_id, $attach_data );
+							// Update the database record
+							wp_update_attachment_metadata( $attach_id, $attach_data );
 						}
-
-				    }
-
-			    }
-
-		    }
-
+					}
+				}
+			}
 		}
-
 	}
-
 }
 
 /**
@@ -648,11 +642,11 @@ function html2wp_setup_custom_post_types_taxonomies() {
 						&& strtolower( $term ) != 'uncategorized' ) {
 
 						wp_insert_term(
-						    $term,   // the term
-						    $post_type . '_categories', // the category for custom post type
-						    array (
-						    	'slug' => $term
-						    )
+							$term,   // the term
+							$post_type . '_categories', // the category for custom post type
+							array (
+								'slug' => $term
+							)
 						);
 					}
 
