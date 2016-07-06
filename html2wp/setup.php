@@ -523,7 +523,7 @@ function html2wp_reset_posts_per_page() {
  * image attachments gallery
  */
 function html2wp_create_image_attachments() {
-	
+
 	$html2wp_settings = html2wp_get_theme_settings();
 
 	if ( !empty( $html2wp_settings['attachments'] ) ) {
@@ -534,11 +534,13 @@ function html2wp_create_image_attachments() {
 		    // Get the path to the upload directory.
 		    $wp_upload_dir = wp_upload_dir();
 
-		    // If wp_upload_dir succeeds 
+		    // If wp_upload_dir succeeds
 		    if ( !$wp_upload_dir['error'] ) {
 
 			    // $new_file should be the path to a file in the upload directory.
 			    $new_file = trailingslashit( $wp_upload_dir['path'] ) . basename( $file );
+
+			    $file = get_template_directory() . "/" . $file;
 
 			    // Check that the file exists
 			    if ( file_exists( $file ) ) {
@@ -551,7 +553,7 @@ function html2wp_create_image_attachments() {
 
 					    // Prepare an array of post data for the attachment.
 					    $attachment_data = array(
-					        'guid'           => trailingslashit( $wp_upload_dir['url'] ) . basename( $new_file ), 
+					        'guid'           => trailingslashit( $wp_upload_dir['url'] ) . basename( $new_file ),
 					        'post_mime_type' => $filetype['type'],
 					        'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $new_file ) ),
 					        'post_content'   => '',
@@ -587,7 +589,7 @@ function html2wp_create_image_attachments() {
 }
 
 /**
- * Reads the global settings from html2wp and creates any 
+ * Reads the global settings from html2wp and creates any
  * new custom post types and / or categories if needed
  */
 function html2wp_setup_custom_post_types_taxonomies() {
