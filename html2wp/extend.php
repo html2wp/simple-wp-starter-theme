@@ -67,5 +67,9 @@ function html2wp_add_active_class_to_menu_item( $classes ) {
 		$classes[] = 'active current ';
 	}
 
+	if ( in_array( 'menu-item-has-children', $classes ) ) {
+		$classes[] = 'dropdown ';
+	}
+
 	return $classes;
 }
