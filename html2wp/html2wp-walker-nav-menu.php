@@ -46,7 +46,7 @@ class Html2wp_walker_nav_menu extends Walker_Nav_Menu {
 		}
 
 		$indent = str_repeat("\t", $depth);
-		$output .= "\n$indent<ul class=\"sub-menu\">\n";
+		$output .= "\n$indent<ul class=\"sub-menu dropdown-menu\">\n";
 	}
 
 	/**
@@ -144,6 +144,7 @@ class Html2wp_walker_nav_menu extends Walker_Nav_Menu {
 				else {
 					$walker_list_item_attributes['class'] = $wp_class_names;
 				}
+
 			}
 
 			$output .= '<li';
@@ -153,7 +154,7 @@ class Html2wp_walker_nav_menu extends Walker_Nav_Menu {
 			}
 
 			$output .= '>';
-			
+
 		}
 
 		// Decide the link attribute we want
@@ -174,6 +175,12 @@ class Html2wp_walker_nav_menu extends Walker_Nav_Menu {
 		$atts['target'] 			= ! empty( $item->target )     ? $item->target     : '';
 		$atts['rel']    			= ! empty( $item->xfn )        ? $item->xfn        : '';
 		$atts[ $link_attribute ]   	= ! empty( $item->url )        ? $item->url        : '';
+
+		// add a data-toggle = dropdown attribute for bootstrap cases if this
+		// sub element is an anchor in a dropdown element
+		if ( strpos( $wp_class_names, 'menu-item-has-children' ) !== false ) {
+			$atts['data-toggle'] = "dropdown";
+		}
 
 		// If we have a list we have already outputted some of the info for the li element, otherwise ouput the info now
 		if ( !$args->walker_links_in_list ) {
