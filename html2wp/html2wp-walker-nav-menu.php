@@ -179,7 +179,7 @@ class Html2wp_walker_nav_menu extends Walker_Nav_Menu {
 		// add a data-toggle = dropdown attribute for bootstrap cases if this
 		// sub element is an anchor in a dropdown element
 		if ( strpos( $wp_class_names, 'menu-item-has-children' ) !== false ) {
-			$atts['data-toggle'] = "dropdown";
+			$atts['data-toggle'] = 'dropdown';
 		}
 
 		// If we have a list we have already outputted some of the info for the li element, otherwise ouput the info now
