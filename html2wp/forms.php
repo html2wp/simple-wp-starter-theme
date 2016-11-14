@@ -243,7 +243,11 @@ function html2wp_form_submit() {
 
 			//weed out redundant keys in $_POST
 			if ( in_array( $key, $form_fields ) ) {
-				$entry["{$input_id}"] = sanitize_text_field( $value );
+				$entry_key = array_search( $key, $form_fields );
+				$entry["{strval($entry_key)}"] = sanitize_text_field( $value );
+				// NOTE: Do Not delete this commented line below as gravity forms
+				// might change back the mechanism again for form field fetch
+				// $entry["{$input_id}"] = sanitize_text_field( $value );
 				$input_id++;
 			}
 		}
