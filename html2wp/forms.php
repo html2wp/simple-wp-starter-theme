@@ -231,7 +231,7 @@ function html2wp_form_submit() {
 				 * the $_POST array
 				 */
 				foreach ( $form['fields'] as $value ) {
-					$form_fields[] = $value->name;
+					$form_fields[$value->id] = $value->name;
 				}
 
 				break;
